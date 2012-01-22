@@ -19,8 +19,17 @@ module CloudCostTracker
       @accounts = accounts
       @delay    = options[:delay]
       @log      = options[:logger] || CloudCostTracker.default_logger
-      @tracker = FogTracker::Tracker.new(
-        @accounts, {:delay => @delay, :logger => @log}
+      setup_fog_tracker
+    end
+
+    # Creates a FogTracker::Tracker that calls bill_for_account
+    # each time an account is refreshed
+    def setup_fog_tracker
+      callback = Proc.new do |account_name, *args|
+        bill_for_account(account_name)
+      end
+      @tracker = FogTracker::Tracker.new(@accounts,
+        {:delay => @delay, :logger => @log, :callback => callback}
       )
     end
 
@@ -47,5 +56,13 @@ module CloudCostTracker
     # Returns true or false/nil depending on whether this tracker is polling
     def running? ; @running end
 
+    # Generates BillingRecords for all Resources in account named +account_name+
+    def bill_for_account(account_name)
+      @log.info "Generating cost info for account #{account_name}"
+      @tracker.types_for_account(account_name).each do |type|
+        @log.debug "Generating cost info for #{type} on account #{account_name}"
+        account = @accounts[account_name]
+      end
+    end
   end
 end
