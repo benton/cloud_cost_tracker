@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   # Runtime dependencies
-  s.add_dependency "fog"
+  s.add_dependency "fog_tracker"
   s.add_dependency "activerecord"
 
   # Development / Test dependencies
