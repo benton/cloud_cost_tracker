@@ -9,7 +9,7 @@ discovered by the [Fog gem](https://github.com/fog/fog)
 ----------------
 What is it?
 ----------------
-The Cloud Cost Tracker periodically polls one or more cloud computing accounts and determines the state of their associated cloud computing "resources": compute instances, disk volumes, stored objects, and so on. Each time the accounts are queried, an ActiveRecord object (a BillingRecord) is created or updated for each resource, containing the cost for that resource over the period since its previous BillingRecord.
+The Cloud Cost Tracker periodically polls one or more cloud computing accounts and determines the state of their associated cloud computing "resources": compute instances, disk volumes, stored objects, and so on. Each time the accounts are queried, an ActiveRecord object (a BillingRecord) is created or updated for each resource, containing the cost for that resource over the period of the BillingRecord.
 
 
 ----------------
