@@ -21,13 +21,4 @@ module CloudCostTracker
     logger
   end
 
-  # Returns a Class object, which is some subclass of BillingClass
-  # based on the +fog_provider+, +fog_service+, and +fog_collection+
-  def self.get_billing_policy_class(fog_provider, fog_service, fog_collection)
-    policy_class_name = "#{fog_collection.capitalize}BillingPolicy"
-    provider_module = CloudCostTracker::Billing::const_get fog_provider
-    service_module = provider_module.send(:const_get, fog_service)
-    policy_exists = service_module.send(:const_defined?, policy_class_name)
-    policy_exists ? service_module.send(:const_get, policy_class_name) : nil
-  end
 end
