@@ -42,11 +42,10 @@ module CloudCostTracker
     # Generates BillingRecords for all Resources in account named +account_name+
     def bill_for_resources(resources)
       account_name = resources.first.tracker_account[:name]
-      @log.debug "Generating cost info for account #{account_name}"
-      biller = Billing::AccountBillingPolicy.new(
-        account_name, @accounts[account_name], { :logger => @log }
-      )
-      biller.bill_resources(resources)
+      @log.info "Generating cost info for account #{account_name}"
+      resources.each do |resource|
+        Billing::ResourceBiller.new(resource, {:logger => @log})
+      end
     end
   end
 end

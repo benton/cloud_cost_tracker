@@ -1,34 +1,18 @@
-# Implements a generic Billing Policy that always returns 0.0 cost
+# Implements a class for managing a Resource's BillingRecord
 module CloudCostTracker
   module Billing
-    class AccountBillingPolicy
+    class ResourceBiller
 
-      # Creates an object for billing Fog accounts
-      #
-      # ==== Attributes
-      #
-      # * +account_name+ - the name of the account to bill for
-      # * +account+ - the Hash of account information (see accounts.yml.example)
-      # * +options+ - Hash of optional parameters
-      #
-      # ==== Options
-      #
-      # * +:logger+ - a Ruby Logger-compatible object
-      def initialize(account_name, account, options={})
-        @account_name = account_name
-        @account      = account
-        @log          = options[:logger] || CloudCostTracker.default_logger
-        @agents       = Hash.new  #
-      end
-
-      # Creates or Updates BillingRecords for an Array of +resources+
-      def bill_resources(resources)
-        @log.info "Generating costs for #{resources.count} "+
-        "resources in account #{@account_name}"
-        resources.each do |resource|
-          if billing_agent = get_billing_agent(resource)
-            bill_resource(resource, billing_agent)
-          end
+      # Creates an object for managing a resource's BillingRecords
+      # @param [Fog::Model] the Fog resource whose BillingRecord should be
+      #    created or updated.
+      # @param [Hash] options optional additional parameters:
+      #  - :logger - a Ruby Logger-compatible object
+      def initialize(resource, options={})
+        @resource = resource
+        @log      = options[:logger] || FogTracker.default_logger
+        if billing_agent = get_billing_agent(resource)
+          bill_resource(resource, billing_agent)
         end
       end
 
@@ -38,9 +22,7 @@ module CloudCostTracker
       # using the supplied +billing_agent+
       def bill_resource(resource, billing_agent)
         total = billing_agent.get_cost_since_time(resource, Time.now)
-        if total < 0
-          total = billing_agent.get_cost_for_duration(resource, 60)
-        end
+        total ||= billing_agent.get_cost_for_duration(resource, 60)
         @log.debug "Generated cost #{total} for #{resource.class} "+
         "#{resource.identity}"
       end
@@ -61,9 +43,8 @@ module CloudCostTracker
             if provider_module.send(:const_defined?, policy_name)
               @log.debug "Creating Billing Agent #{billing_class_name}"
               policy_class = provider_module.send(:const_get, policy_name)
-              @agents[billing_class_name] = policy_class.send(:new,
-              @account_name, @account, { :logger => @log }
-              )
+              @agents[billing_class_name] =
+                policy_class.send(:new, {:logger => @log})
             end
           end
         end
