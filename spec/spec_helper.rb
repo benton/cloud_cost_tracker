@@ -1,4 +1,5 @@
 Bundler.require # Load all gems and libs
+Fog.mock!       # Don't try to connect to the network
 
 # Establish ActiveRecord connection
 db_conf_file = File.expand_path('../../config/database.yml', __FILE__)
