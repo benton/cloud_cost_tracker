@@ -15,7 +15,7 @@ The Cloud Cost Tracker periodically polls one or more cloud computing accounts a
 ----------------
 Why is it?
 ----------------
-The Cloud Cost Tracker is intended to be a foundation library, on top of which more complex cloud billing / accounting applications can be built. Although an executable 'tracker' command-line program is included, the library is primarily intended for use from within Rails, or some other ActiveRecord context, that can generate reports based on the BillingRecords.
+The Cloud Cost Tracker is intended to be a foundation library, on top of which more complex cloud billing / accounting applications can be built. Although an executable 'cloud_cost_tracker' command-line program is included, the library is primarily intended for use from within Rails, or some other ActiveRecord context, that can generate reports based on the BillingRecords.
 
 
 ----------------
@@ -89,7 +89,7 @@ Usage [from the command line]
 
 3) Run the tracker, and point it at the both the database config file and the accounts file.
 
-    tracker database.yml accounts.yml --migrate
+    cloud_cost_tracker database.yml accounts.yml --migrate
 
   The `--migrate` argument updates the database to the latest version of the schema, and is only necessary for new databases, or when upgrading to a new version of the Tracker gem.
 
