@@ -4,7 +4,7 @@
 #   Uses the Fog gem to generate billing records for cloud computing resources
 #
 # == Usage
-#   tracker.rb [options] DB_CONFIG_FILE.YML ACCOUNTS_CONFIG_FILE.YML
+#   cloud_cost_tracker.rb [options] DB_CONFIG_FILE.YML ACCOUNTS_CONFIG_FILE.YML
 #
 # == Options (all options can be put into the config file)
 #   -d, --delay [INTEGER]       Seconds between status updates. default = 180
@@ -29,7 +29,7 @@ module CloudCostTracker
   class CloudCostTrackerConsoleApp
 
     def initialize
-      @log = CloudCostTracker.default_logger
+      @log = FogTracker.default_logger(STDOUT)
       parse_options
       @log.info "Loading database configuration from #{ARGV[0]}"
       connect_to_database(YAML::load(File.open(ARGV[0])))
@@ -50,7 +50,8 @@ module CloudCostTracker
     def go
       @tracker.start
       while true do
-        sleep 60   # Loop forever
+        sleep 30   # Loop forever
+        @log.info "Total resources = #{@tracker['*::*::*::*'].count}"
       end
     end
 
