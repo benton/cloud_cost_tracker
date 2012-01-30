@@ -1,4 +1,4 @@
-require 'cloud_cost_tracker'
+require 'cloud_cost_tracker/billing/resources/resource_billing_policy'
 module CloudCostTracker
   module Billing
     module Resources
