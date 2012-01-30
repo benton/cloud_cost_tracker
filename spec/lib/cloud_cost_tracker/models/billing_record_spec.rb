@@ -7,7 +7,7 @@ module CloudCostTracker
         :account        => "fake_account_ID",
         :resource_id    => "fake_resource_ID",
         :resource_type  => "fake_resource_type",
-        :start_time     => Time.now - CloudCostTracker::DEFAULT_POLLING_TIME,
+        :start_time     => Time.now - FogTracker::DEFAULT_POLLING_TIME,
         :stop_time      => Time.now,
         :cost_per_hour  => 0.0,
         :total_cost     => 0.0,
