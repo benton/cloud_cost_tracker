@@ -16,17 +16,19 @@ module CloudCostTracker
   # @return [ResourceBillingPolicy] a billing policy object for resource
   def self.create_billing_agent(resource, options = {})
     agent = nil
-    billing_class_name = "CloudCostTracker::Billing::Resources"
+    # Safely descend through the Billing module Heirarchy
     if matches = resource.class.name.match(%r{^Fog::(\w+)::(\w+)::(\w+)})
       fog_svc, provider, policy_name =
         matches[1], matches[2], "#{matches[3]}BillingPolicy"
-      billing_class_name += "::#{fog_svc}::#{provider}::#{policy_name}"
-      service_module =
-        CloudCostTracker::Billing::Resources::const_get fog_svc
-      provider_module = service_module.send(:const_get, provider)
-      if provider_module.send(:const_defined?, policy_name)
-        policy_class = provider_module.send(:const_get, policy_name)
-        agent = policy_class.send(:new, resource, {:logger => options[:logger]})
+      if CloudCostTracker::Billing::Resources.const_defined? fog_svc
+        service_module = CloudCostTracker::Billing::Resources::const_get fog_svc
+        if service_module.const_defined? provider
+          provider_module = service_module.const_get provider
+          if provider_module.const_defined? policy_name
+            policy_class = provider_module.const_get policy_name
+            agent = policy_class.new(resource, {:logger => options[:logger]})
+          end
+        end
       end
     end
     agent

@@ -1,13 +1,14 @@
 Bundler.require # Load all gems and libs
-Fog.mock!       # Don't try to connect to the network
 
+Fog.mock!       # Don't try to connect to the network
 module CloudCostTracker
-FAKE_AWS = Fog::Compute.new(
-  :provider => 'AWS',
-  :aws_access_key_id => 'XXXXXXXXXXXXXXXXXXXX',
-  :aws_secret_access_key => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-)
+  FAKE_AWS = Fog::Compute.new(
+    :provider => 'AWS',
+    :aws_access_key_id => 'XXXXXXXXXXXXXXXXXXXX',
+    :aws_secret_access_key => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  )
 end
+
 # Establish ActiveRecord connection
 db_conf_file = File.expand_path('../../config/database.yml', __FILE__)
 puts "Using DB #{db_conf_file}..."
