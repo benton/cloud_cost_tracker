@@ -1,4 +1,7 @@
-adapter: sqlite3
-database: db/cloud_cost_tracker.sqlite3
-pool: 5
-timeout: 5000
+adapter: mysql2
+database: cloud_cost_tracker
+username: root
+#adapter: sqlite3
+#database: db/cloud_cost_tracker.sqlite3
+#pool: 5
+#timeout: 5000

@@ -4,3 +4,4 @@ source "http://rubygems.org"
 gemspec
 
 gem "fog_tracker", :path => "/Users/benton/projects/fog_tracker"
+gem 'mysql2'
