@@ -1,6 +1,8 @@
 require 'active_record'
 require 'logger'
 
+# Load BillingResource class
+require 'cloud_cost_tracker/billing/resources/resource_billing_policy'
 # Load all ruby files from 'cloud_cost_tracker' directory
 Dir[File.join(File.dirname(__FILE__), "cloud_cost_tracker/**/*.rb")].each {|f| require f}
 
