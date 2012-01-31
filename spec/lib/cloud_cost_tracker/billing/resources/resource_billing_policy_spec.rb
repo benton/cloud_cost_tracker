@@ -4,7 +4,7 @@ module CloudCostTracker
       describe ResourceBillingPolicy do
 
         before(:each) do
-          @resource = Fog::Compute[:aws].servers.new
+          @resource = FAKE_AWS.servers.new
           @default_policy = ResourceBillingPolicy.new(@resource)
         end
 
