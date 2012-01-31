@@ -5,7 +5,8 @@ module CloudCostTracker
 
         before(:each) do
           @resource = FAKE_AWS.servers.new
-          @default_policy = ResourceBillingPolicy.new(@resource)
+          @default_policy = ResourceBillingPolicy.new(@resource,
+            {:logger => FogTracker.default_logger(STDOUT)})
         end
 
         describe '#get_cost_since_time' do
