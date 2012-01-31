@@ -10,7 +10,6 @@ module CloudCostTracker
         def initialize(resource, options={})
           @resource = resource
           @log = options[:logger] || FogTracker.default_logger
-          bill_resource
         end
 
         # returns the cost for a particular resource since a given point in time
@@ -20,14 +19,54 @@ module CloudCostTracker
         # returns the cost for a particular resource over some duration (in seconds)
         def get_cost_for_duration(duration) ; 0.0 end
 
+        # Creates or Updates a BillingRecord for this BillingPolicy's @resource
+        def write_billing_record
+          if existing_record = find_record_to_update
+            update_existing_billing_record existing_record
+          else
+            create_new_billing_record
+          end
+          total_costs
+        end
+
         private
 
-        # Creates or Updates the BillingRecord for an individual
-        def bill_resource
+        # Returns the latest BillingRecord for this resource if it is unchanged
+        # and if its stop_time is less than the polling delay from Time.now
+        # if no such BillingRecord is found, returns nil
+        def find_record_to_update
+          nil
+        end
+
+        # Creates a new BillingRecord object and writes it to the database
+        def create_new_billing_record
+          billing_params = {
+            :provider       => @resource.tracker_account[:provider],
+            :service        => @resource.tracker_account[:service],
+            :account        => @resource.tracker_account[:name],
+            :resource_id    => @resource.identity,
+            :resource_type  => (@resource.class.name.match(/::([^:]+)$/))[1],
+            :start_time     => Time.now - @resource.tracker_account[:polling_time],
+            :stop_time      => Time.now,
+            :cost_per_hour  => get_cost_for_duration(3600),
+            :total_cost     => total_costs
+          }
+          @log.debug "Creating BillingRecord: #{billing_params.inspect}"
+          CloudCostTracker::BillingRecord.create!(billing_params)
+        end
+
+        # Updates the time and total on a BillingRecord object
+        # and writes it to the database
+        def update_existing_billing_record(billing_record)
+
+        end
+
+        def total_costs
           total = get_cost_since_time(Time.now)
           total ||= get_cost_for_duration(60)
-          @log.info "Generated cost #{total} for #{@resource.class} "+
-          "#{@resource.identity}"
+          @log.debug "Calculated cost #{total} for #{@resource.class} "+
+            "#{@resource.identity}"
+          total
         end
 
       end

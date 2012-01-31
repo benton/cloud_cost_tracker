@@ -44,7 +44,9 @@ module CloudCostTracker
       account_name = resources.first.tracker_account[:name]
       @log.info "Generating cost info for account #{account_name}"
       resources.each do |resource|
-        CloudCostTracker::create_billing_agent(resource, {:logger => @log})
+        if agent = CloudCostTracker::create_billing_agent(resource, {:logger => @log})
+          agent.write_billing_record
+        end
       end
     end
   end
