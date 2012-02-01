@@ -22,7 +22,7 @@ module CloudCostTracker
                 'c1.xlarge'   => 68.0,
                 # Cluster Compute Instances
                 'cc1.4xlarge' => 130.0,
-                'cc1.4xlarge' => 240.0,
+                'cc1.8xlarge' => 240.0,
                 # Cluster GPU Instances
                 'cg1.4xlarge' => 210.0,
               },
@@ -42,7 +42,7 @@ module CloudCostTracker
                 'c1.xlarge'   => 116.0,
                 # Cluster Compute Instances
                 'cc1.4xlarge' => 161.0,
-                'cc1.4xlarge' => 297.0,
+                'cc1.8xlarge' => 297.0,
                 # Cluster GPU Instances
                 'cg1.4xlarge' => 260.0,
               },
