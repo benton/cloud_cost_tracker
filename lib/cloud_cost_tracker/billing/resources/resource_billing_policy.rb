@@ -19,7 +19,7 @@ module CloudCostTracker
         def setup ; end
 
         # returns the cost for a particular resource over some duration (in seconds)
-        def get_cost_for_duration(duration) ; 0.0 end
+        def get_cost_for_duration(resource, duration) ; 0.0 end
 
         # Creates or Updates a BillingRecord for this BillingPolicy's @resource
         def write_billing_record_for(resource)
