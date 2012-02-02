@@ -13,9 +13,6 @@ module CloudCostTracker
     # @param [BillingRecord] other_billing_record the record to match
     # @return [BillingRecord,nil] the latest "matching" BillingRecord
     def self.find_last_matching_record(other_billing_record)
-      #if other_billing_record.resource_id =~ /e270/i
-      #  puts "=========> Searching for previous record for #{other_billing_record.inspect}..."
-      #end
       results = CloudCostTracker::BillingRecord.where(
         :provider       => other_billing_record.provider,
         :service        => other_billing_record.service,
@@ -24,9 +21,6 @@ module CloudCostTracker
         :resource_type  => other_billing_record.resource_type,
         :cost_per_hour  => other_billing_record.cost_per_hour,
       ).order(:stop_time).reverse_order.limit(1)
-      #if other_billing_record.resource_id =~ /e270/i
-      #  puts "=========> Found results #{results.inspect}..."
-      #end
       results.empty? ? nil : results.first
     end
 
@@ -41,10 +35,6 @@ module CloudCostTracker
       else
         first, second = other_billing_record, self
       end
-      #if resource_id =~ /e270/i
-      #  puts "=========> #{second.start_time} - #{first.stop_time} <= #{min_proximity}"+
-      #        " ??????  = #{second.start_time - first.stop_time <= min_proximity}"
-      #end
       second.start_time - first.stop_time <= min_proximity
     end
 
