@@ -6,7 +6,7 @@ module CloudCostTracker
     # each CloudCostTracker is a thin wrapper around it's @tracker,
     require 'fog_tracker'     # which is a FogTracker:Tracker
     extend Forwardable        # most public methods are delegated
-    def_delegators :@tracker,:start,:stop,:query,:[],
+    def_delegators :@tracker,:start,:stop,:query,:[],:update,
             :running?,:types_for_account,:logger
 
     # Creates an object for tracking Fog accounts in an ActiveRecord database
