@@ -54,10 +54,13 @@ module CloudCostTracker
           agent.setup   # call setup once on each agent
         end
       end
-      # Send each resource to its appropriate agent
-      resources.each do |resource|
-        if agent = agents[resource.class]
-          agent.write_billing_record_for(resource)
+      # Begin a thread-safe ActiveRecord transaction
+      ActiveRecord::Base.connection_pool.with_connection do
+        # Send each resource to its appropriate agent
+        resources.each do |resource|
+          if agent = agents[resource.class]
+            agent.write_billing_record_for(resource)
+          end
         end
       end
       @log.info "Wrote billing records for account #{account_name}"

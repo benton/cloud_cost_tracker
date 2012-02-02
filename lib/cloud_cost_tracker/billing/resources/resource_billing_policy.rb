@@ -37,20 +37,16 @@ module CloudCostTracker
             :cost_per_hour  => get_cost_for_duration(resource, 3600),
             :total_cost     => get_cost_for_duration(resource, polling_time)
           )
-          # Begin a thread-safe ActiveRecord transaction
-          ActiveRecord::Base.connection_pool.with_connection do
-            # Combine BillingRecords within @polling_time of one another
-            last_record = BillingRecord.find_last_matching_record(new_record)
-            if last_record && last_record.overlaps_with(new_record, polling_time)
-              @log.debug "Updating record #{last_record.id}"+
-                          " for #{resource.tracker_description}"
-              last_record.update_from new_record
-            else
-              @log.debug "Creating new record for #{resource.tracker_description}"
-              new_record.save!
-            end
+          # Combine BillingRecords within @polling_time of one another
+          last_record = BillingRecord.find_last_matching_record(new_record)
+          if last_record && last_record.overlaps_with(new_record, polling_time)
+            @log.debug "Updating record #{last_record.id}"+
+                        " for #{resource.tracker_description}"
+            last_record.update_from new_record
+          else
+            @log.debug "Creating new record for #{resource.tracker_description}"
+            new_record.save!
           end
-
         end
       end
     end
