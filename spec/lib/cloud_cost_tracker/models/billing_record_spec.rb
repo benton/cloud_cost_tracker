@@ -17,6 +17,7 @@ module CloudCostTracker
         :total_cost     => ((@stop_time - @start_time) * @hourly_rate) / 3600,
       }
       @existing_bill = BillingRecord.create!(@existing_bill_params)
+       @new_years_day_2100 = Time.gm(2100, 1, 1, 0, 0, 0)
     end
 
     after(:each) do
@@ -92,24 +93,42 @@ module CloudCostTracker
 
     describe '#overlaps_with' do
       context "when invoked with a BillingRecord far away in time" do
-        it "returns false"
+        it "returns false" do
+          new_bill = BillingRecord.new(@existing_bill_params.merge(
+            :start_time => @new_years_day_2100,
+            :stop_time  => @new_years_day_2100 + 3600
+          ))
+          @existing_bill.overlaps_with(new_bill).should == false
+        end
+
       end
       context "when invoked with a BillingRecord adjacent in time" do
-        it "returns true"
+        it "returns true" do
+          new_bill = BillingRecord.new(@existing_bill_params.merge(
+            :start_time => @existing_bill_params[:stop_time],
+            :stop_time  => @existing_bill_params[:stop_time] + 3600
+          ))
+          @existing_bill.overlaps_with(new_bill).should == true
+        end
       end
       context "when invoked with a BillingRecord overlapping in time" do
-        it "returns true"
+        it "returns true" do
+          new_bill = BillingRecord.new(@existing_bill_params.merge(
+            :start_time => @existing_bill_params[:stop_time] - 1,
+            :stop_time  => @existing_bill_params[:stop_time] + 3600
+          ))
+          @existing_bill.overlaps_with(new_bill).should == true
+        end
       end
     end
 
     describe '#update_from with an existing BillingRecord' do
       it "copies the stop time of the current record onto the existing record" do
-        new_years_day_2100 = Time.gm(2100, 1, 1, 0, 0, 0)
         new_bill = BillingRecord.new(@existing_bill_params.merge(
-          :stop_time => new_years_day_2100
+          :stop_time => @new_years_day_2100
         ))
         @existing_bill.update_from new_bill
-        @existing_bill.stop_time.should == new_years_day_2100
+        @existing_bill.stop_time.should == @new_years_day_2100
       end
       it "updates the total for the existing record" do
         # Run an update that causes the @existing_bill's total to double
