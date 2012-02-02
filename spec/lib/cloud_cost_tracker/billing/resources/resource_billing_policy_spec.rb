@@ -4,8 +4,13 @@ module CloudCostTracker
       describe ResourceBillingPolicy do
 
         before(:each) do
+          BillingRecord.delete_all
           @resource = FAKE_AWS.servers.new
           @default_policy = ResourceBillingPolicy.new
+        end
+
+        after(:each) do
+          BillingRecord.delete_all
         end
 
         it "should expose a (null-impementation) setup method" do
