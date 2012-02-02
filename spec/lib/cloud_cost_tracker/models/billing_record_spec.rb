@@ -11,7 +11,6 @@ module CloudCostTracker
         :stop_time      => Time.now,
         :cost_per_hour  => 0.0,
         :total_cost     => 0.0,
-        :billing_codes  => "billing_code_1, billing_code_2",
       )
     end
 

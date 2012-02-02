@@ -8,9 +8,8 @@ class CreateBillingRecords < ActiveRecord::Migration
       t.string :resource_type
       t.datetime :start_time
       t.datetime :stop_time
-      t.string :cost_per_hour
-      t.string :total_cost
-      t.text :billing_codes
+      t.float :cost_per_hour
+      t.float :total_cost
 
       t.timestamps
     end
