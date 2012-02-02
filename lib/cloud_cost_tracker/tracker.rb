@@ -44,21 +44,23 @@ module CloudCostTracker
       return if resources.empty?
       account_name = resources.first.tracker_account[:name]
       @log.info "Generating cost info for account #{account_name}"
-      # keep a Hash of BillingPolicy agents, indexed by resource Class name
+      # Build a Hash of BillingPolicy agents, indexed by resource Class name
       agents = Hash.new
       ((resources.collect {|r| r.class}).uniq).each do |resource_class|
         agent = CloudCostTracker::create_billing_agent(
                 resource_class, {:logger => @log})
         if agent
           agents[resource_class] = agent
-          agent.setup
+          agent.setup   # call setup once on each agent
         end
       end
+      # Send each resource to its appropriate agent
       resources.each do |resource|
         if agent = agents[resource.class]
           agent.write_billing_record_for(resource)
         end
       end
+      @log.info "Wrote billing records for account #{account_name}"
     end
   end
 end
