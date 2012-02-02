@@ -1,6 +1,10 @@
 # Abstract class, defines a generic Billing Policy that always returns 0.0 cost
 module CloudCostTracker
   module Billing
+
+    # Defines a directory for holding YML pricing constants
+    CONSTANTS_DIR = File.join(File.dirname(__FILE__),'../../../../config/billing')
+
     module Resources
       class ResourceBillingPolicy
         include CloudCostTracker
