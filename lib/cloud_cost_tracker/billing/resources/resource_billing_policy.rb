@@ -26,9 +26,7 @@ module CloudCostTracker
           account        = resource.tracker_account
           resource_type  = (resource.class.name.match(/::([^:]+)$/))[1]
           polling_time   = account[:polling_time].to_i
-          description   = "#{resource_type} #{resource.identity} "+
-                          "in account #{account[:name]}"
-          new_record    = BillingRecord.new(
+          new_record     = BillingRecord.new(
             :provider       => account[:provider],
             :service        => account[:service],
             :account        => account[:name],
@@ -39,17 +37,22 @@ module CloudCostTracker
             :cost_per_hour  => get_cost_for_duration(resource, 3600),
             :total_cost     => get_cost_for_duration(resource, polling_time)
           )
-          # Combine BillingRecords within @polling_time of one another
-          last_record = BillingRecord.find_last_matching_record(new_record)
-          if last_record && last_record.overlaps_with(new_record, polling_time)
-            @log.debug "Updating record #{last_record.id} for #{description}"
-            last_record.update_from new_record
-          else
-            @log.debug "Creating new record for #{description}"
-            new_record.save!
+          # Begin a thread-safe ActiveRecord transaction
+          ActiveRecord::Base.connection_pool.with_connection do
+            # Combine BillingRecords within @polling_time of one another
+            last_record = BillingRecord.find_last_matching_record(new_record)
+            description = "#{resource_type} #{resource.identity} "+
+                          "in account #{account[:name]}"
+            if last_record && last_record.overlaps_with(new_record, polling_time)
+              @log.debug "Updating record #{last_record.id} for #{description}"
+              last_record.update_from new_record
+            else
+              @log.debug "Creating new record for #{description}"
+              new_record.save!
+            end
           end
-        end
 
+        end
       end
     end
   end
