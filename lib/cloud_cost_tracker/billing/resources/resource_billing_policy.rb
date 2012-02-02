@@ -41,13 +41,12 @@ module CloudCostTracker
           ActiveRecord::Base.connection_pool.with_connection do
             # Combine BillingRecords within @polling_time of one another
             last_record = BillingRecord.find_last_matching_record(new_record)
-            description = "#{resource_type} #{resource.identity} "+
-                          "in account #{account[:name]}"
             if last_record && last_record.overlaps_with(new_record, polling_time)
-              @log.debug "Updating record #{last_record.id} for #{description}"
+              @log.debug "Updating record #{last_record.id}"+
+                          " for #{resource.tracker_description}"
               last_record.update_from new_record
             else
-              @log.debug "Creating new record for #{description}"
+              @log.debug "Creating new record for #{resource.tracker_description}"
               new_record.save!
             end
           end
