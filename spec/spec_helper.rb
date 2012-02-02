@@ -2,6 +2,20 @@ Bundler.require # Load all gems and libs
 
 Fog.mock!       # Don't try to connect to the network
 module CloudCostTracker
+  FAKE_ACCOUNT_NAME = 'Fake EC2 Account'
+  FAKE_ACCOUNT = {
+    :provider     => 'AWS',
+    :service      => 'Compute',
+    :polling_time => 10,
+    :credentials  => {
+      :aws_access_key_id => "fake user",
+      :aws_secret_access_key => 'fake password'
+    },
+    :exclude_resources => [
+      :spot_requests,   # No Fog mocks for this resource
+    ],
+  }
+  FAKE_ACCOUNTS = {FAKE_ACCOUNT_NAME => FAKE_ACCOUNT}
   FAKE_AWS = Fog::Compute.new(
     :provider => 'AWS',
     :aws_access_key_id => 'XXXXXXXXXXXXXXXXXXXX',
