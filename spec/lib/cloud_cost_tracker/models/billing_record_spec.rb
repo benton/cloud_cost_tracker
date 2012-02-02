@@ -1,62 +1,125 @@
 module CloudCostTracker
   describe BillingRecord do
     before(:each) do
-      @bill = BillingRecord.create!(
+
+      @stop_time  = Time.now
+      @start_time = Time.now - FogTracker::DEFAULT_POLLING_TIME
+      @hourly_rate = 5.0
+      @existing_bill_params = {
         :provider       => "fake_provider_name",
         :service        => "fake_service_name",
         :account        => "fake_account_ID",
         :resource_id    => "fake_resource_ID",
         :resource_type  => "fake_resource_type",
-        :start_time     => Time.now - FogTracker::DEFAULT_POLLING_TIME,
-        :stop_time      => Time.now,
-        :cost_per_hour  => 0.0,
-        :total_cost     => 0.0,
-      )
+        :start_time     => @start_time,
+        :stop_time      => @stop_time,
+        :cost_per_hour  => @hourly_rate,
+        :total_cost     => ((@stop_time - @start_time) * @hourly_rate) / 3600,
+      }
+      @existing_bill = BillingRecord.create!(@existing_bill_params)
     end
 
     after(:each) do
-      @bill.destroy
+      @existing_bill.destroy
     end
 
     it "is valid with valid attributes" do
-      @bill.should be_valid
+      @existing_bill.should be_valid
     end
 
     it "is not valid without a provider name" do
-      @bill.provider = nil
-      @bill.should_not be_valid
+      @existing_bill.provider = nil
+      @existing_bill.should_not be_valid
     end
     it "is not valid without a service name" do
-      @bill.service = nil
-      @bill.should_not be_valid
+      @existing_bill.service = nil
+      @existing_bill.should_not be_valid
     end
     it "is not valid without an account name" do
-      @bill.account = nil
-      @bill.should_not be_valid
+      @existing_bill.account = nil
+      @existing_bill.should_not be_valid
     end
     it "is not valid without a resource ID" do
-      @bill.resource_id = nil
-      @bill.should_not be_valid
+      @existing_bill.resource_id = nil
+      @existing_bill.should_not be_valid
     end
     it "is not valid without a resource type" do
-      @bill.resource_type = nil
-      @bill.should_not be_valid
+      @existing_bill.resource_type = nil
+      @existing_bill.should_not be_valid
     end
     it "is not valid without a start time" do
-      @bill.start_time = nil
-      @bill.should_not be_valid
+      @existing_bill.start_time = nil
+      @existing_bill.should_not be_valid
     end
     it "is not valid without a stop time" do
-      @bill.stop_time = nil
-      @bill.should_not be_valid
+      @existing_bill.stop_time = nil
+      @existing_bill.should_not be_valid
     end
     it "is not valid without an hourly cost" do
-      @bill.cost_per_hour = nil
-      @bill.should_not be_valid
+      @existing_bill.cost_per_hour = nil
+      @existing_bill.should_not be_valid
     end
     it "is not valid without a total cost" do
-      @bill.total_cost = nil
-      @bill.should_not be_valid
+      @existing_bill.total_cost = nil
+      @existing_bill.should_not be_valid
+    end
+
+    describe '#find_last_matching_record' do
+      context "when a matching record exists" do
+        it "Finds and returns the most recent 'matching' BillingRecord" do
+          BillingRecord.find_last_matching_record(@existing_bill).
+            should == @existing_bill
+        end
+      end
+      context "when non-matching records exist" do
+        it "returns nil" do
+          new_bill = BillingRecord.new(@existing_bill_params.merge(
+            :service => 'some other service'
+          ))
+          BillingRecord.find_last_matching_record(new_bill).
+            should == nil
+        end
+      end
+      context "when no records exist" do
+        it "returns nil" do
+          new_bill = BillingRecord.new(@existing_bill_params)
+          BillingRecord.delete_all
+          BillingRecord.find_last_matching_record(new_bill).
+            should == nil
+        end
+      end
+    end
+
+    describe '#overlaps_with' do
+      context "when invoked with a BillingRecord far away in time" do
+        it "returns false"
+      end
+      context "when invoked with a BillingRecord adjacent in time" do
+        it "returns true"
+      end
+      context "when invoked with a BillingRecord overlapping in time" do
+        it "returns true"
+      end
+    end
+
+    describe '#update_from with an existing BillingRecord' do
+      it "copies the stop time of the current record onto the existing record" do
+        new_years_day_2100 = Time.gm(2100, 1, 1, 0, 0, 0)
+        new_bill = BillingRecord.new(@existing_bill_params.merge(
+          :stop_time => new_years_day_2100
+        ))
+        @existing_bill.update_from new_bill
+        @existing_bill.stop_time.should == new_years_day_2100
+      end
+      it "updates the total for the existing record" do
+        # Run an update that causes the @existing_bill's total to double
+        duration = (@existing_bill.stop_time - @existing_bill.start_time)
+        new_bill = BillingRecord.new(@existing_bill_params.merge(
+          :stop_time => @existing_bill.stop_time + duration
+        ))
+        @existing_bill.update_from new_bill
+        @existing_bill.total_cost.should == 2 * @existing_bill_params[:total_cost]
+      end
     end
 
   end
