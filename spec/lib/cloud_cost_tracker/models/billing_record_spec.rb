@@ -1,7 +1,7 @@
 module CloudCostTracker
   describe BillingRecord do
     before(:each) do
-
+      # Make a "current" billing record
       @stop_time  = Time.now
       @start_time = Time.now - FogTracker::DEFAULT_POLLING_TIME
       @hourly_rate = 5.0
@@ -17,7 +17,13 @@ module CloudCostTracker
         :total_cost     => ((@stop_time - @start_time) * @hourly_rate) / 3600,
       }
       @existing_bill = BillingRecord.create!(@existing_bill_params)
-       @new_years_day_2100 = Time.gm(2100, 1, 1, 0, 0, 0)
+      # Make a billing record that follows the existing one in time
+      @next_bill = BillingRecord.new(@existing_bill_params.merge(
+              :start_time => @existing_bill_params[:stop_time],
+              :stop_time  => @existing_bill_params[:stop_time] + 3600
+            ))
+      # A day in the distant future
+      @new_years_day_3000 = Time.gm(3000, 1, 1, 0, 0, 0)
     end
 
     after(:each) do
@@ -65,6 +71,22 @@ module CloudCostTracker
       @existing_bill.should_not be_valid
     end
 
+    describe '#most_recent_like' do
+      context "when invoked with a BillingRecord" do
+        context "and another record for the same resource already exists" do
+          it 'returns the most recent BillingRecord for the same resource' do
+            BillingRecord.most_recent_like(@next_bill).should == @existing_bill
+          end
+        end
+        context "and no other record for the same resource already exists" do
+          it 'returns nil' do
+            BillingRecord.delete_all
+            BillingRecord.most_recent_like(@next_bill).should == nil
+          end
+        end
+      end
+    end
+
     describe '#find_last_matching_record' do
       context "when a matching record exists" do
         it "Finds and returns the most recent 'matching' BillingRecord" do
@@ -77,16 +99,13 @@ module CloudCostTracker
           new_bill = BillingRecord.new(@existing_bill_params.merge(
             :service => 'some other service'
           ))
-          BillingRecord.find_last_matching_record(new_bill).
-            should == nil
+          BillingRecord.find_last_matching_record(new_bill).should == nil
         end
       end
       context "when no records exist" do
         it "returns nil" do
-          new_bill = BillingRecord.new(@existing_bill_params)
           BillingRecord.delete_all
-          BillingRecord.find_last_matching_record(new_bill).
-            should == nil
+          BillingRecord.find_last_matching_record(@next_bill).should == nil
         end
       end
     end
@@ -94,49 +113,37 @@ module CloudCostTracker
     describe '#overlaps_with' do
       context "when invoked with a BillingRecord far away in time" do
         it "returns false" do
-          new_bill = BillingRecord.new(@existing_bill_params.merge(
-            :start_time => @new_years_day_2100,
-            :stop_time  => @new_years_day_2100 + 3600
-          ))
-          @existing_bill.overlaps_with(new_bill).should == false
+          @next_bill.start_time = @new_years_day_3000
+          @next_bill.stop_time  = @new_years_day_3000 + 3600
+          @existing_bill.overlaps_with(@next_bill).should == false
         end
 
       end
       context "when invoked with a BillingRecord adjacent in time" do
         it "returns true" do
-          new_bill = BillingRecord.new(@existing_bill_params.merge(
-            :start_time => @existing_bill_params[:stop_time],
-            :stop_time  => @existing_bill_params[:stop_time] + 3600
-          ))
-          @existing_bill.overlaps_with(new_bill).should == true
+          @existing_bill.overlaps_with(@next_bill).should == true
         end
       end
       context "when invoked with a BillingRecord overlapping in time" do
         it "returns true" do
-          new_bill = BillingRecord.new(@existing_bill_params.merge(
-            :start_time => @existing_bill_params[:stop_time] - 1,
-            :stop_time  => @existing_bill_params[:stop_time] + 3600
-          ))
-          @existing_bill.overlaps_with(new_bill).should == true
+          @next_bill.start_time = @existing_bill_params[:stop_time] - 1
+          @next_bill.stop_time  = @existing_bill_params[:stop_time] + 3600
+          @existing_bill.overlaps_with(@next_bill).should == true
         end
       end
     end
 
     describe '#update_from with an existing BillingRecord' do
       it "copies the stop time of the current record onto the existing record" do
-        new_bill = BillingRecord.new(@existing_bill_params.merge(
-          :stop_time => @new_years_day_2100
-        ))
-        @existing_bill.update_from new_bill
-        @existing_bill.stop_time.should == @new_years_day_2100
+        @next_bill.stop_time = @new_years_day_3000
+        @existing_bill.update_from @next_bill
+        @existing_bill.stop_time.should == @new_years_day_3000
       end
       it "updates the total for the existing record" do
         # Run an update that causes the @existing_bill's total to double
         duration = (@existing_bill.stop_time - @existing_bill.start_time)
-        new_bill = BillingRecord.new(@existing_bill_params.merge(
-          :stop_time => @existing_bill.stop_time + duration
-        ))
-        @existing_bill.update_from new_bill
+        @next_bill.stop_time = @existing_bill.stop_time + duration
+        @existing_bill.update_from @next_bill
         @existing_bill.total_cost.should == 2 * @existing_bill_params[:total_cost]
       end
     end
