@@ -8,8 +8,8 @@ class CreateBillingRecords < ActiveRecord::Migration
       t.string :resource_type
       t.datetime :start_time
       t.datetime :stop_time
-      t.float :cost_per_hour
-      t.float :total_cost
+      t.decimal :cost_per_hour, :scale => 10, :precision => 10
+      t.decimal :total_cost, :scale => 10, :precision => 10
 
       t.timestamps
     end
