@@ -15,7 +15,7 @@ module CloudCostTracker
                 duration / SECONDS_PER_MONTH
             end
 
-            # chop the availability zone lette from the region
+            # chop the availability zone letter from the region
             def zone(resource)
               resource.availability_zone.chop
             end

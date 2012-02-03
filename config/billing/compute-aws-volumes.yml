@@ -1,5 +1,5 @@
-# Elastic Block Store pricing, in cents per GB per month  
-# From http://aws.amazon.com/ebs/
+# Elastic Block Store Volume pricing, in cents per GB per month
+# From http://aws.amazon.com/ec2/pricing/
 ---
 us-east-1:
   10.0 # cents per GB per month
