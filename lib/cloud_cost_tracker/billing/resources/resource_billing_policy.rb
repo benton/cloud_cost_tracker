@@ -36,6 +36,8 @@ module CloudCostTracker
           resource_type   = (resource.class.name.match(/::([^:]+)$/))[1]
           polling_time    = account[:polling_time].to_i
           total           = get_cost_for_duration(resource, polling_time)
+          hourly_rate     = get_cost_for_duration(resource, SECONDS_PER_HOUR).
+                                round(PRECISION)
           # Write no record if the cost is zero
           return if total == 0.0
           new_record      = BillingRecord.new(
@@ -46,8 +48,7 @@ module CloudCostTracker
             :resource_type  => resource_type,
             :start_time     => Time.now - polling_time,
             :stop_time      => Time.now,
-            :cost_per_hour  => get_cost_for_duration(resource, SECONDS_PER_HOUR).
-                                round(PRECISION),
+            :cost_per_hour  => hourly_rate,
             :total_cost     => total
           )
           # Combine BillingRecords within @polling_time of one another
