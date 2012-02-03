@@ -15,7 +15,7 @@ module CloudCostTracker
         resource = FAKE_AWS.servers.new
         resource.stub(:tracker_account).and_return(FAKE_ACCOUNT)
         resource.stub(:identity).and_return "fake server ID"
-        @resource.stub(:status).and_return "running"
+        resource.stub(:status).and_return "running"
         FogTracker::AccountTracker.any_instance.stub(:all_resources).
           and_return([ resource ])
         @tracker.update
