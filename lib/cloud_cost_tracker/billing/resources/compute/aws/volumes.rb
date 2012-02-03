@@ -10,6 +10,7 @@ module CloudCostTracker
 
             # returns the cost for a particular resource over some duration (in seconds)
             def get_cost_for_duration(resource, duration)
+              return 0.0 if resource.state =~ /(deleting|deleted)/
               CENTS_PER_GB_PER_MONTH[zone(resource)] * resource.size *
                 duration / SECONDS_PER_MONTH
             end
