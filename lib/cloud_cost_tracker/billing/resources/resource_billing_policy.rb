@@ -23,14 +23,17 @@ module CloudCostTracker
         def setup ; end
 
         # returns the cost for a particular resource over some duration (in seconds)
-        def get_cost_for_duration(resource, duration) ; 0.0 end
+        def get_cost_for_duration(resource, duration) ; 1.0 end
 
         # Creates or Updates a BillingRecord for this BillingPolicy's @resource
         def write_billing_record_for(resource)
-          account        = resource.tracker_account
-          resource_type  = (resource.class.name.match(/::([^:]+)$/))[1]
-          polling_time   = account[:polling_time].to_i
-          new_record     = BillingRecord.new(
+          account         = resource.tracker_account
+          resource_type   = (resource.class.name.match(/::([^:]+)$/))[1]
+          polling_time    = account[:polling_time].to_i
+          total           = get_cost_for_duration(resource, polling_time)
+          # Write no record if the cost is zero
+          return if total == 0.0
+          new_record      = BillingRecord.new(
             :provider       => account[:provider],
             :service        => account[:service],
             :account        => account[:name],
@@ -39,7 +42,7 @@ module CloudCostTracker
             :start_time     => Time.now - polling_time,
             :stop_time      => Time.now,
             :cost_per_hour  => get_cost_for_duration(resource, 3600),
-            :total_cost     => get_cost_for_duration(resource, polling_time)
+            :total_cost     => total
           )
           # Combine BillingRecords within @polling_time of one another
           last_record = BillingRecord.find_last_matching_record(new_record)

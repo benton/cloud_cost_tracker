@@ -4,6 +4,7 @@ Fog.mock!       # Don't try to connect to the network
 module CloudCostTracker
   FAKE_ACCOUNT_NAME = 'Fake EC2 Account'
   FAKE_ACCOUNT = {
+    :name         => FAKE_ACCOUNT_NAME,
     :provider     => 'AWS',
     :service      => 'Compute',
     :polling_time => 10,
