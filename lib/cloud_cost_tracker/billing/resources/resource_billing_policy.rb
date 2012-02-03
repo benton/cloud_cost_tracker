@@ -4,6 +4,11 @@ module CloudCostTracker
 
     # Defines a directory for holding YML pricing constants
     CONSTANTS_DIR = File.join(File.dirname(__FILE__),'../../../../config/billing')
+    # Some time constants
+    SECONDS_PER_HOUR  = 3600.0
+    SECONDS_PER_DAY   = SECONDS_PER_HOUR * 24
+    SECONDS_PER_YEAR  = SECONDS_PER_DAY * 365
+    SECONDS_PER_MONTH = SECONDS_PER_YEAR / 12
 
     module Resources
       class ResourceBillingPolicy
@@ -41,7 +46,7 @@ module CloudCostTracker
             :resource_type  => resource_type,
             :start_time     => Time.now - polling_time,
             :stop_time      => Time.now,
-            :cost_per_hour  => get_cost_for_duration(resource, 3600),
+            :cost_per_hour  => get_cost_for_duration(resource, SECONDS_PER_HOUR),
             :total_cost     => total
           )
           # Combine BillingRecords within @polling_time of one another

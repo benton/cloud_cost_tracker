@@ -12,7 +12,7 @@ module CloudCostTracker
             def get_cost_for_duration(resource, duration)
               return 0.0 if resource.state =~ /(stopped|terminated)/
               hourly_cost = CENTS_PER_HOUR[platform_for(resource)][resource.flavor_id]
-              (hourly_cost * duration) / 3600.0
+              (hourly_cost * duration) / SECONDS_PER_HOUR
             end
 
             # returns either 'windows' or 'unix', based on this instance's platform
