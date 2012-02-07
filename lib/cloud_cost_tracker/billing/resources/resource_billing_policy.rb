@@ -2,14 +2,20 @@
 module CloudCostTracker
   module Billing
 
-    PRECISION     = 10
+    PRECISION     = 10  # (Should match database migration precision)
     # Defines a directory for holding YML pricing constants
     CONSTANTS_DIR = File.join(File.dirname(__FILE__),'../../../../config/billing')
+
     # Some time constants
     SECONDS_PER_HOUR  = 3600.0
     SECONDS_PER_DAY   = SECONDS_PER_HOUR * 24
     SECONDS_PER_YEAR  = SECONDS_PER_DAY * 365
     SECONDS_PER_MONTH = SECONDS_PER_YEAR / 12
+    # Some size constants
+    BYTES_PER_KB      = 1024
+    BYTES_PER_MB      = BYTES_PER_KB * 1024
+    BYTES_PER_GB      = BYTES_PER_MB * 1024
+
     module Resources
       class ResourceBillingPolicy
         include CloudCostTracker
