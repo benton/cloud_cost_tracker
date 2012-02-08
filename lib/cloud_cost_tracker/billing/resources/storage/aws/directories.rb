@@ -23,13 +23,12 @@ module CloudCostTracker
             def total_size(bucket)
                # check for saved value
               return @bucket_size[bucket] if @bucket_size[bucket]
-              @log.warn "Computing size for bucket #{bucket.tracker_description}"
-              total_bytes = 0.0
+              @log.debug "Computing size for #{bucket.tracker_description}"
+              total_bytes = 0
               bucket.files.each {|object| total_bytes += object.content_length}
-              @log.warn "total bytes =  #{total_bytes}"
+              @log.debug "total bytes = #{total_bytes}"
               # save the total size for later
               @bucket_size[bucket] = total_bytes / BYTES_PER_GB.to_f
-              @bucket_size[bucket]
             end
 
             # remember each bucket size, because iterating over the objects is
