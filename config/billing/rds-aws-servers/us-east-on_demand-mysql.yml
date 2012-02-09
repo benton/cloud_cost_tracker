@@ -1,0 +1,24 @@
+# Amazon RDS On-demand MySQL instance pricing for the US-East region
+# From http://aws.amazon.com/rds/pricing/
+---
+# Standard Deployment
+standard:
+  # DB Instance Class (On-Demand)
+  db.m1.small:     11.0
+  db.m1.large:     44.0
+  db.m1.xlarge:    88.0
+  # High-Memory DB Instance Class
+  db.m2.xlarge:    65.0
+  db.m2.2xlarge:   130.0
+  db.m2.4xlarge:   260.0
+
+# Multi-AZ Deployment
+multi_az:
+  # DB Instance Class (On-Demand)
+  db.m1.small:     22.0
+  db.m1.large:     88.0
+  db.m1.xlarge:    166.0
+  # High-Memory DB Instance Class
+  db.m2.xlarge:    130.0
+  db.m2.2xlarge:   260.0
+  db.m2.4xlarge:   520.0
