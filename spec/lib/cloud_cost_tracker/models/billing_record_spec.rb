@@ -11,6 +11,7 @@ module CloudCostTracker
         :account        => "fake_account_ID",
         :resource_id    => "fake_resource_ID",
         :resource_type  => "fake_resource_type",
+        :billing_type   => "fake_billing_type",
         :start_time     => @start_time,
         :stop_time      => @stop_time,
         :cost_per_hour  => @hourly_rate,
@@ -52,6 +53,10 @@ module CloudCostTracker
     end
     it "is not valid without a resource type" do
       @existing_bill.resource_type = nil
+      @existing_bill.should_not be_valid
+    end
+    it "is not valid without a billing type" do
+      @existing_bill.billing_type = nil
       @existing_bill.should_not be_valid
     end
     it "is not valid without a start time" do

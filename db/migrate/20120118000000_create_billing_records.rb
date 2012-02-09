@@ -6,6 +6,7 @@ class CreateBillingRecords < ActiveRecord::Migration
       t.string :account
       t.string :resource_id
       t.string :resource_type
+      t.string :billing_type
       t.datetime :start_time
       t.datetime :stop_time
       t.decimal :cost_per_hour, :scale => 10, :precision => 20

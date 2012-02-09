@@ -52,6 +52,7 @@ module CloudCostTracker
             :account        => account[:name],
             :resource_id    => resource.identity,
             :resource_type  => resource_type,
+            :billing_type   => "#{resource_type} runtime",
             :start_time     => Time.now - polling_time,
             :stop_time      => Time.now,
             :cost_per_hour  => hourly_rate,
