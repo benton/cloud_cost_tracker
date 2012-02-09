@@ -36,6 +36,9 @@ module CloudCostTracker
         # returns the cost for a particular resource over some duration (in seconds)
         def get_cost_for_duration(resource, duration) ; 1.0 end
 
+        # Returns the default billing type for this policy
+        def billing_type ; nil end
+
         # Creates or Updates a BillingRecord for this BillingPolicy's @resource
         def write_billing_record_for(resource)
           account         = resource.tracker_account
@@ -52,7 +55,7 @@ module CloudCostTracker
             :account        => account[:name],
             :resource_id    => resource.identity,
             :resource_type  => resource_type,
-            :billing_type   => "#{resource_type} runtime",
+            :billing_type   => billing_type || "#{resource_type} runtime",
             :start_time     => Time.now - polling_time,
             :stop_time      => Time.now,
             :cost_per_hour  => hourly_rate,
