@@ -37,7 +37,7 @@ module CloudCostTracker
         :account        => billing_record.account,
         :resource_id    => billing_record.resource_id,
         :resource_type  => billing_record.resource_type,
-        #:billing_type  => billing_record.billing_type,
+        :billing_type  => billing_record.billing_type,
       ).order(:stop_time).reverse_order.limit(1)
       results.empty? ? nil : results.first
     end
