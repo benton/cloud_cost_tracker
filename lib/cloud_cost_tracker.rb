@@ -8,30 +8,31 @@ Dir[File.join(File.dirname(__FILE__), "cloud_cost_tracker/**/*.rb")].each {|f| r
 
 module CloudCostTracker
 
-  # Creates and returns an appropriate instance of ResourceBillingPolicy
-  # for billing the given +resource+, or nil the Class is not found
+  # Creates and returns an Array of ResourceBillingPolicy (subclass) instances
+  # for billing the given +resource+, or an empty Array of none are found
   # @param [Class] resource_class the Class object for the billed resource
   # @param [Hash] options optional additional parameters:
   #  - :logger - a Ruby Logger-compatible object
-  # @return [ResourceBillingPolicy] a billing policy object for resource
-  def self.create_billing_agent(resource_class, options = {})
-    agent = nil
+  # @return [Array <ResourceBillingPolicy>] billing policy objects for resource
+  def self.create_billing_agents(resource_class, options = {})
+    agents = Array.new
     # Safely descend through the Billing module Heirarchy
     if matches = resource_class.name.match(%r{^Fog::(\w+)::(\w+)::(\w+)})
-      fog_svc, provider, policy_name =
-        matches[1], matches[2], "#{matches[3]}BillingPolicy"
+      fog_svc, provider, model_name = matches[1], matches[2], matches[3]
       if CloudCostTracker::Billing::Resources.const_defined? fog_svc
         service_module = CloudCostTracker::Billing::Resources::const_get fog_svc
         if service_module.const_defined? provider
           provider_module = service_module.const_get provider
-          if provider_module.const_defined? policy_name
-            policy_class = provider_module.const_get policy_name
-            agent = policy_class.new(:logger => options[:logger])
+          # Search through the classes in the module for all matches
+          classes = provider_module.classes.each do |policy_class|
+            if policy_class.name =~ /#{model_name}.*BillingPolicy/
+              agents << policy_class.new(:logger => options[:logger])
+            end
           end
         end
       end
     end
-    agent
+    agents
   end
 
 end

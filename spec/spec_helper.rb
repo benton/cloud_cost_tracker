@@ -22,6 +22,10 @@ module CloudCostTracker
     :aws_access_key_id => 'XXXXXXXXXXXXXXXXXXXX',
     :aws_secret_access_key => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   )
+  FAKE_RDS = Fog::AWS::RDS.new(
+    :aws_access_key_id => 'XXXXXXXXXXXXXXXXXXXX',
+    :aws_secret_access_key => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  )
 end
 
 # Establish ActiveRecord connection
