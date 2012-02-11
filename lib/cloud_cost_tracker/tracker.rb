@@ -33,10 +33,30 @@ module CloudCostTracker
       @tracker = FogTracker::Tracker.new(@accounts,
         {:delay => @delay, :logger => @log,
           :callback => Proc.new do |resources|
+            code_resources(resources)
             bill_for_resources(resources)
           end
         }
       )
+    end
+
+    # Adds billing codes for all resources
+    def code_resources(resources)
+      return if resources.empty?
+      account_name = resources.first.tracker_account[:name]
+      @log.info "Generating billing codes for account #{account_name}"
+      # Build a Hash of CodingPolicy agents, indexed by resource Class name
+      agents = Hash.new
+      ((resources.collect {|r| r.class}).uniq).each do |resource_class|
+        agents[resource_class] = CloudCostTracker::create_coding_agents(
+          resource_class, {:logger => @log})
+        agents[resource_class].each {|agent| agent.setup}
+      end
+      # Send each resource to its appropriate agent
+      resources.each do |resource|
+        agents[resource.class].each {|agent| agent.code(resource)}
+      end
+      @log.info "Computed billing codes for account #{account_name}"
     end
 
     # Generates BillingRecords for all Resources in account named +account_name+
@@ -49,6 +69,7 @@ module CloudCostTracker
       ((resources.collect {|r| r.class}).uniq).each do |resource_class|
         agents[resource_class] = CloudCostTracker::create_billing_agents(
           resource_class, {:logger => @log})
+        agents[resource_class].each {|agent| agent.setup}
       end
       # Begin a thread-safe ActiveRecord transaction
       ActiveRecord::Base.connection_pool.with_connection do

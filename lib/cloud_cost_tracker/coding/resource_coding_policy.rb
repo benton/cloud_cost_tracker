@@ -19,9 +19,7 @@ module CloudCostTracker
       def setup ; end
 
       # Attaches Billing Codes (String pairs) to resource, as billing_codes
-      def code(resource)
-        resource.billing_codes = Array.new if resource
-      end
+      def code(resource) ; end
 
     end
   end
