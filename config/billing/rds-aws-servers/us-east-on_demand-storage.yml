@@ -1,0 +1,10 @@
+# Amazon RDS storage pricing for the US-East region
+# From http://aws.amazon.com/rds/pricing/
+---
+# Standard Deployment
+standard:
+  10.0 # cents per GB per month
+
+# Multi-AZ Deployment
+multi_az:
+  20.0 # cents per GB per month
