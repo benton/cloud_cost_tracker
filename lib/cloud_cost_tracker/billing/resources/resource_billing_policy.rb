@@ -42,7 +42,7 @@ module CloudCostTracker
         # Creates or Updates a BillingRecord for this BillingPolicy's @resource
         def write_billing_record_for(resource)
           account         = resource.tracker_account
-          resource_type   = (resource.class.name.match(/::([^:]+)$/))[1]
+          resource_type   = resource.class.name.split('::').last
           polling_time    = account[:polling_time].to_i
           total           = get_cost_for_duration(resource, polling_time)
           hourly_rate     = get_cost_for_duration(resource, SECONDS_PER_HOUR).
@@ -55,7 +55,7 @@ module CloudCostTracker
             :account        => account[:name],
             :resource_id    => resource.identity,
             :resource_type  => resource_type,
-            :billing_type   => billing_type || "#{resource_type} runtime",
+            :billing_type   => billing_type || self.class.name.split('::').last,
             :start_time     => Time.now - polling_time,
             :stop_time      => Time.now,
             :cost_per_hour  => hourly_rate,

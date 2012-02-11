@@ -64,7 +64,7 @@ module CloudCostTracker
               results.first.account.should == FAKE_ACCOUNT_NAME
               results.first.provider.should == 'AWS'
               results.first.service.should == 'Compute'
-              results.first.billing_type.should == 'Server runtime'
+              results.first.billing_type.should == 'ResourceBillingPolicy'
             end
           end
         end
