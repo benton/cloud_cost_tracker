@@ -47,9 +47,8 @@ module CloudCostTracker
       # Build a Hash of BillingPolicy agents, indexed by resource Class name
       agents = Hash.new
       ((resources.collect {|r| r.class}).uniq).each do |resource_class|
-        agents[resource_class] =
-         CloudCostTracker::create_billing_agents(resource_class,
-          {:logger => @log})
+        agents[resource_class] = CloudCostTracker::create_billing_agents(
+          resource_class, {:logger => @log})
       end
       # Begin a thread-safe ActiveRecord transaction
       ActiveRecord::Base.connection_pool.with_connection do
