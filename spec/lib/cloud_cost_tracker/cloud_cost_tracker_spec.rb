@@ -45,4 +45,13 @@ module CloudCostTracker
     end
   end
 
+  describe '#account_coding_class' do
+    context "for a Fog service with an AccountCodingPolicy subclass" do
+      it "returns the correct AccountCodingPolicy subclass" do
+        CloudCostTracker::account_coding_class('Compute', 'AWS').
+          should == Coding::Compute::AWS::AccountCodingPolicy
+      end
+    end
+  end
+
 end

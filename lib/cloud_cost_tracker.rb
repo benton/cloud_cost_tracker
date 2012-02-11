@@ -7,6 +7,8 @@ require 'cloud_cost_tracker/coding/resource_coding_policy'
 # Load all ruby files from 'cloud_cost_tracker' directory
 Dir[File.join(File.dirname(__FILE__), "cloud_cost_tracker/**/*.rb")].each {|f| require f}
 
+# Top-level module namespace - defines some static methods for mapping providers,
+# services and resources to their various Billing and Coding Policies
 module CloudCostTracker
 
   # Creates and returns an Array of ResourceBillingPolicy (subclass) instances
@@ -62,5 +64,23 @@ module CloudCostTracker
     end
     agents
   end
+
+  # Returns a Class object, of the appropriate subclass of
+  # AccountCodingPolicy, given a Fog service and provider name.
+  # If none exists, returns CloudCostTracker::Coding::AccountCodingPolicy.
+  def self.account_coding_class(fog_service, provider)
+    agent_class = CloudCostTracker::Coding::AccountCodingPolicy
+    if CloudCostTracker::Coding.const_defined? fog_service
+      service_module = CloudCostTracker::Coding::const_get fog_service
+      if service_module.const_defined? provider
+        provider_module = service_module.const_get provider
+        if provider_module.const_defined? 'AccountCodingPolicy'
+          agent_class = provider_module.const_get 'AccountCodingPolicy'
+        end
+      end
+    end
+    agent_class
+  end
+
 
 end
