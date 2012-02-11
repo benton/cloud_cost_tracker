@@ -14,7 +14,7 @@ module CloudCostTracker
                 resource.allocated_storage * duration / SECONDS_PER_MONTH
             end
 
-            # returns either 'windows' or 'unix',
+            # returns either 'multi_az' or 'standard',
             # depending on whether this RDS server is multi-AZ
             def zone_setting(resource)
               resource.multi_az ? 'multi_az' : 'standard'
