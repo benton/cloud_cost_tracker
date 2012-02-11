@@ -4,7 +4,7 @@ module CloudCostTracker
     context "for a resource with only a single BillingPolicy defined" do
       it "returns an Array with the correct ResourceBillingPolicy subclass" do
         CloudCostTracker::create_billing_agents(FAKE_AWS.servers.new.class).
-          first.class.should == Billing::Resources::Compute::AWS::ServerBillingPolicy
+          first.class.should == Billing::Compute::AWS::ServerBillingPolicy
       end
     end
     context "for a resource with several BillingPolicy classes" do
@@ -26,7 +26,7 @@ module CloudCostTracker
     context "for a resource with only a single CodingPolicy defined" do
       it "returns an Array with the correct ResourceCodingPolicy subclass" do
         CloudCostTracker::create_coding_agents(FAKE_AWS.servers.new.class).
-          first.class.should == Coding::Resources::Compute::AWS::ServerCodingPolicy
+          first.class.should == Coding::Compute::AWS::ServerCodingPolicy
       end
     end
     context "for a resource with several CodingPolicy classes" do
