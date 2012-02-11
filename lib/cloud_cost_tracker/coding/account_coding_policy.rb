@@ -25,9 +25,14 @@ module CloudCostTracker
         Array.new
       end
 
+      # Defines an acount-wide coding strategy for coding each resource
+      def attach_account_codes(resource) ; end
+
+      # Defines the defulat method for coding all resources
       # Attaches Billing Codes (String pairs) to resources, as billing_codes
       # Resources whose class is in priority_classes are coded first
       def code(resources)
+        resources.each {|resource| attach_account_codes(resource)}
         classes_to_code = priority_classes + (@agents.keys - priority_classes)
         classes_to_code.each do |fog_model_class|
           @log.debug "Coding class #{fog_model_class}"
@@ -39,7 +44,7 @@ module CloudCostTracker
       end
 
       private
-      
+
       # Builds a Hash of CodingPolicy agents, indexed by resource Class name
       def setup_resource_billing_agents(resources)
         @agents = Hash.new

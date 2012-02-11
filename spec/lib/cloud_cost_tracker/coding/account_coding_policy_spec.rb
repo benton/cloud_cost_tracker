@@ -21,10 +21,9 @@ module CloudCostTracker
       end
 
       describe '#code' do
-        it 'attaches billing codes to tagged AWS resources' do
-          @server.stub(:tags).and_return('environment' => 'sandbox')
+        it 'calls attach_account_codes on each resource' do
+          @default_policy.should_receive(:attach_account_codes).exactly(2).times
           @default_policy.code([@server, @db])
-          @server.billing_codes.should == [['environment', 'sandbox']]
         end
       end
 
