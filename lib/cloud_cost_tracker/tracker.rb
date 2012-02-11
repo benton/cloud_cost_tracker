@@ -43,20 +43,14 @@ module CloudCostTracker
     # Adds billing codes for all resources
     def code_resources(resources)
       return if resources.empty?
-      account_name = resources.first.tracker_account[:name]
-      @log.info "Generating billing codes for account #{account_name}"
-      # Build a Hash of CodingPolicy agents, indexed by resource Class name
-      agents = Hash.new
-      ((resources.collect {|r| r.class}).uniq).each do |resource_class|
-        agents[resource_class] = CloudCostTracker::create_coding_agents(
-          resource_class, {:logger => @log})
-        agents[resource_class].each {|agent| agent.setup}
-      end
-      # Send each resource to its appropriate agent
-      resources.each do |resource|
-        agents[resource.class].each {|agent| agent.code(resource)}
-      end
-      @log.info "Computed billing codes for account #{account_name}"
+      account = resources.first.tracker_account
+      @log.info "Generating billing codes for account #{account[:name]}"
+      coding_class = CloudCostTracker::account_coding_class(
+        account[:service], account[:provider])
+      coding_agent = coding_class.new(resources, {:logger => @log})
+      coding_agent.setup(resources)
+      coding_agent.code(resources)
+      @log.info "Computed billing codes for account #{account[:name]}"
     end
 
     # Generates BillingRecords for all Resources in account named +account_name+
