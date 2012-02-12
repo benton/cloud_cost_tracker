@@ -5,7 +5,7 @@ class CreateBillingCodes < ActiveRecord::Migration
       t.string :value,  :size => 512
     end
 
-    create_table :billing_records_codes do |t|
+    create_table :billing_records_codes, :id => false do |t|
       t.integer :billing_record_id, :null => false
       t.integer :billing_code_id,   :null => false
     end
