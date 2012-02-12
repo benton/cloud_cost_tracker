@@ -75,6 +75,11 @@ module CloudCostTracker
       @existing_bill.total_cost = nil
       @existing_bill.should_not be_valid
     end
+    it "validates its associated billing codes" do
+      new_record = BillingRecord.new(@existing_bill_params)
+      new_record.billing_codes = [CloudCostTracker::BillingCode.new]
+      new_record.should_not be_valid
+    end
 
     describe '#most_recent_like' do
       context "when invoked with a BillingRecord" do

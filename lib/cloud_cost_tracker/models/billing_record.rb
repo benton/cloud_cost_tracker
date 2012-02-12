@@ -8,6 +8,7 @@ module CloudCostTracker
     validates_presence_of :provider, :service, :account,
       :resource_id, :resource_type, :billing_type,
       :start_time, :stop_time, :cost_per_hour, :total_cost
+    validates_associated :billing_codes
 
     # Finds and returns the latest BillingRecord that "matches"
     # billing_record, or nil if none such exists.
