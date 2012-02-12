@@ -88,8 +88,16 @@ module CloudCostTracker
     describe '#most_recent_like' do
       context "when invoked with a BillingRecord" do
         context "and another record for the same resource already exists" do
-          it 'returns the most recent BillingRecord for the same resource' do
-            BillingRecord.most_recent_like(@next_bill).should == @existing_bill
+          context "with the same BillingCodes" do
+            it 'returns the most recent BillingRecord for the same resource' do
+              BillingRecord.most_recent_like(@next_bill).should == @existing_bill
+            end
+          end
+          context "but with different BillingCodes" do
+            it 'returns nil' do
+              @next_bill.billing_codes << BillingCode.new(:key=>'k', :value=>'v')
+              BillingRecord.most_recent_like(@next_bill).should == nil
+            end
           end
         end
         context "and no other record for the same resource already exists" do
