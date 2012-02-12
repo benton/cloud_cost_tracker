@@ -47,7 +47,7 @@ module CloudCostTracker
         polling_time    = account[:polling_time].to_i
         total           = get_cost_for_duration(resource, polling_time)
         hourly_rate     = get_cost_for_duration(resource, SECONDS_PER_HOUR).
-        round(PRECISION)
+                            round(PRECISION)
         # Write no record if the cost is zero
         return if total == 0.0
         new_record = BillingRecord.new(

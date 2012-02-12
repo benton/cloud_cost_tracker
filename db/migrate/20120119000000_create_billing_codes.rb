@@ -2,7 +2,7 @@ class CreateBillingCodes < ActiveRecord::Migration
   def self.up
     create_table :billing_codes do |t|
       t.string :key,    :size => 512, :null => false
-      t.string :value,  :size => 512, :null => false
+      t.string :value,  :size => 512
     end
 
     create_table :billing_records_codes do |t|

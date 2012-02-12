@@ -18,9 +18,9 @@ module CloudCostTracker
       @existing_code.key = nil
       @existing_code.should_not be_valid
     end
-    it "is not valid without a value" do
+    it "is valid without a value" do
       @existing_code.value = nil
-      @existing_code.should_not be_valid
+      @existing_code.should be_valid
     end
 
     it "is not valid if an identical code is already saved" do
