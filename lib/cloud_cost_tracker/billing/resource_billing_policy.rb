@@ -62,6 +62,7 @@ module CloudCostTracker
           :cost_per_hour  => hourly_rate,
           :total_cost     => total
         )
+        new_record.set_codes(resource.billing_codes)
         # Combine BillingRecords within @polling_time of one another
         last_record = BillingRecord.find_last_matching_record(new_record)
         if last_record && last_record.overlaps_with(new_record, polling_time)

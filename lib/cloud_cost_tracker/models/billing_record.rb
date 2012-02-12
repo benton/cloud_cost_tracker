@@ -20,8 +20,7 @@ module CloudCostTracker
     # @return [BillingRecord,nil] the latest "matching" BillingRecord
     def self.find_last_matching_record(billing_record)
       match = nil
-      if most_recent =
-        CloudCostTracker::BillingRecord.most_recent_like(billing_record)
+      if most_recent = BillingRecord.most_recent_like(billing_record)
         if (most_recent.cost_per_hour == billing_record.cost_per_hour)
           match = most_recent
         end
@@ -36,7 +35,7 @@ module CloudCostTracker
     # @param [BillingRecord] other_billing_record the record to match
     # @return [BillingRecord,nil] the latest "matching" BillingRecord
     def self.most_recent_like(billing_record)
-      results = CloudCostTracker::BillingRecord.where(
+      results = BillingRecord.where(
         :provider       => billing_record.provider,
         :service        => billing_record.service,
         :account        => billing_record.account,
@@ -68,6 +67,18 @@ module CloudCostTracker
       total = ((stop_time - start_time) * cost_per_hour) / 3600
       self.total_cost = total
       save!
+    end
+
+    # Creates BillngCodes as necessary from codes, an Array of String pairs
+    # and associates this BilligRecord with those BillingCodes
+    # @param [Array <Array <String>>] codes the String pairs to use as codes
+    def set_codes(codes)
+      codes.each do |key, value|
+        self.billing_codes << ( # Find the matching BillingCode or make a new one
+          BillingCode.where(:key => key, :value => value).first or
+          BillingCode.new(:key => key, :value => value)
+        )
+      end
     end
 
   end
