@@ -1,5 +1,9 @@
 module CloudCostTracker
   class BillingRecord < ActiveRecord::Base
+
+    has_and_belongs_to_many :billing_codes,
+      :join_table => 'billing_records_codes'
+
     # Validations
     validates_presence_of :provider, :service, :account,
       :resource_id, :resource_type, :billing_type,
