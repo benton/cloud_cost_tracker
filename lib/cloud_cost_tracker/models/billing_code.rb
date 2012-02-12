@@ -5,7 +5,8 @@ module CloudCostTracker
       :join_table => 'billing_records_codes'
 
     # Validations
-    validates_presence_of :key, :value
+    validates :key,   :presence => true
+    validates :value, :presence => true, :uniqueness => {:scope => :key}
 
   end
 end
