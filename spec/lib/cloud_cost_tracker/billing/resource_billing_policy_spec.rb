@@ -38,7 +38,7 @@ module CloudCostTracker
             # the subject class must be overriden to test its effects in
             # any implemented subclasses
             @default_policy.stub(:get_cost_for_duration).and_return 0
-            @default_policy.write_billing_record_for @resource
+            @default_policy.write_billing_record_for(@resource, 0.0, 0.0)
             BillingRecord.all.count.should == 0
           end
         end
@@ -51,13 +51,13 @@ module CloudCostTracker
             BillingRecord.stub(:find_last_matching_record).
             and_return existing_record
             existing_record.should_receive :update_from
-            @default_policy.write_billing_record_for @resource
+            @default_policy.write_billing_record_for(@resource, 1.0, 1.0)
           end
         end
         context 'when no matching record exists' do
           it "writes a new record" do
             BillingRecord.stub(:find_last_matching_record).and_return(nil)
-            @default_policy.write_billing_record_for @resource
+            @default_policy.write_billing_record_for(@resource, 1.0, 1.0)
             results = BillingRecord.where(:resource_id => @resource.identity)
             results.should_not be_empty
             results.first.account.should == FAKE_ACCOUNT_NAME
