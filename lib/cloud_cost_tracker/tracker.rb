@@ -56,25 +56,13 @@ module CloudCostTracker
     # Generates BillingRecords for all Resources in account named +account_name+
     def bill_for_resources(resources)
       return if resources.empty?
-      account_name = resources.first.tracker_account[:name]
-      @log.info "Generating cost info for account #{account_name}"
-      # Build a Hash of BillingPolicy agents, indexed by resource Class name
-      agents = Hash.new
-      ((resources.collect {|r| r.class}).uniq).each do |resource_class|
-        agents[resource_class] = CloudCostTracker::create_billing_agents(
-          resource_class, {:logger => @log})
-        agents[resource_class].each {|agent| agent.setup}
-      end
-      # Begin a thread-safe ActiveRecord transaction
-      ActiveRecord::Base.connection_pool.with_connection do
-        # Send each resource to its appropriate agent
-        resources.each do |resource|
-          agents[resource.class].each do |agent|
-            agent.write_billing_record_for(resource)
-          end
-        end
-      end
-      @log.info "Wrote billing records for account #{account_name}"
+      account = resources.first.tracker_account
+      @log.info "Generating costs for account #{account[:name]}"
+      billing_agent = Billing::AccountBillingPolicy.new(
+                        resources, {:logger => @log})
+      billing_agent.setup(resources)
+      billing_agent.bill_for(resources)
+      @log.info "Wrote billing records for account #{account[:name]}"
     end
   end
 end

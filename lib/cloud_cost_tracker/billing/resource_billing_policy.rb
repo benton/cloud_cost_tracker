@@ -40,15 +40,16 @@ module CloudCostTracker
       end
 
       # Creates or Updates a BillingRecord for this BillingPolicy's @resource
-      def write_billing_record_for(resource)
+      # param [Float] hourly_rate the resource's hourly rate for this period
+      # param [Float] hourly_rate the resource's total cost for this period
+      # param [Integer] max_time the maximum separation between separate
+      #  resource records, in seconds
+      def write_billing_record_for(resource, hourly_rate, total, max_time = nil)
         account         = resource.tracker_account
         resource_type   = resource.class.name.split('::').last
         polling_time    = account[:polling_time].to_i
-        total           = get_cost_for_duration(resource, polling_time)
-        hourly_rate     = get_cost_for_duration(resource, SECONDS_PER_HOUR).
-                            round(PRECISION)
-        # Write no record if the cost is zero
-        return if total == 0.0
+        maximum_gap     = max_time || polling_time
+        return if total == 0.0  # Write no record if the cost is zero
         new_record = BillingRecord.new(
           :provider       => account[:provider],
           :service        => account[:service],
@@ -62,9 +63,9 @@ module CloudCostTracker
           :total_cost     => total
         )
         new_record.set_codes(resource.billing_codes)
-        # Combine BillingRecords within @polling_time of one another
+        # Combine BillingRecords within maximim_gap of one another
         last_record = BillingRecord.find_last_matching_record(new_record)
-        if last_record && last_record.overlaps_with(new_record, polling_time)
+        if last_record && last_record.overlaps_with(new_record, maximum_gap)
           @log.debug "Updating record #{last_record.id}"+
           " for #{resource.tracker_description}"
           last_record.update_from new_record
