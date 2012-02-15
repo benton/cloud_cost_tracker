@@ -32,7 +32,7 @@ module CloudCostTracker
 
           # remember each bucket size, because iterating over the objects is
           # slow, and get_cost_for_duration is called twice
-          def setup
+          def setup(resources)
             @bucket_size = Hash.new
           end
 

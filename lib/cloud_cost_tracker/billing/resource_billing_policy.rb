@@ -24,15 +24,14 @@ module CloudCostTracker
       #  - :logger - a Ruby Logger-compatible object
       def initialize(options={})
         @log = options[:logger] || FogTracker.default_logger
-        setup
       end
 
       # Used by subclasses to perform setup each time an account is billed
       # High-latency operations like network transactions that are not
       # per-resource should be performed here
-      def setup ; end
+      def setup(resources) ; end
 
-      # returns the cost for a particular resource over some duration (in seconds)
+      # returns the cost for a particular resource over some duration in seconds
       def get_cost_for_duration(resource, duration) ; 1.0 end
 
       # Returns the default billing type for this policy

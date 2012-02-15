@@ -3,14 +3,14 @@ module CloudCostTracker
   module Coding
     class AccountCodingPolicy
 
-      # Creates an object that implements a billing policy
+      # Creates an object that implements a coding policy
       # that attaches no billing codes
       # @param [Array <Fog::Model>] resources the resources to code
       # @param [Hash] options optional parameters:
       #  - :logger - a Ruby Logger-compatible object
       def initialize(resources, options={})
         @log = options[:logger] || FogTracker.default_logger
-        setup_resource_billing_agents(resources)
+        setup_resource_coding_agents(resources)
       end
 
       # Used by subclasses to perform setup each time an account's
@@ -28,7 +28,7 @@ module CloudCostTracker
       # Defines an acount-wide coding strategy for coding each resource
       def attach_account_codes(resource) ; end
 
-      # Defines the defulat method for coding all resources
+      # Defines the default method for coding all resources
       # Attaches Billing Codes (String pairs) to resources, as billing_codes
       # Resources whose class is in priority_classes are coded first
       def code(resources)
@@ -46,7 +46,7 @@ module CloudCostTracker
       private
 
       # Builds a Hash of CodingPolicy agents, indexed by resource Class name
-      def setup_resource_billing_agents(resources)
+      def setup_resource_coding_agents(resources)
         @agents = Hash.new
         ((resources.collect {|r| r.class}).uniq).each do |resource_class|
           @agents[resource_class] = CloudCostTracker::create_coding_agents(
