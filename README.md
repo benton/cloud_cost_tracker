@@ -71,21 +71,21 @@ Usage [from the command line]
       :credentials:
         :aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
         :aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-      :polling_time: 180
+      :delay: 180
     AWS EC2 production account:
       :provider: AWS
       :service: Compute
       :credentials:
         :aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
         :aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-      :polling_time: 120
+      :delay: 120
     Rackspace development account:
       :provider: Rackspace
       :service: Compute
       :credentials:
         :rackspace_api_key: XXXXXXXXXXXXXXXXXXXX
         :rackspace_username: XXXXXXXXX
-      :polling_time: 180
+      :delay: 180
 
 3) Run the tracker, and point it at the both the database config file and the accounts file.
 

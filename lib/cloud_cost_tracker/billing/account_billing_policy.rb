@@ -30,21 +30,21 @@ module CloudCostTracker
       def bill_for(resources)
         return if resources.empty?
         account = resources.first.tracker_account   # Get account info
-        polling_time = account[:polling_time].to_i
+        delay = account[:delay].to_i
         start_billing = Time.now  # track how long billing takes
         # calculate the hourly and total cost for each resource
         resources.each do |resource|
           @agents[resource.class].each do |billing_agent|
             @total_cost[resource][billing_agent] = billing_agent.
-              get_cost_for_duration(resource, polling_time).round(PRECISION)
+              get_cost_for_duration(resource, delay).round(PRECISION)
             @hourly_cost[resource][billing_agent] = billing_agent.
               get_cost_for_duration(resource, SECONDS_PER_HOUR).round(PRECISION)
           end
         end
         billing_time = Time.now - start_billing
-        @log.info "Generated costs for #{resources.count} resources in "+
-          "#{billing_time} seconds for account #{account[:name]}"
-        write_records_for(resources, billing_time + polling_time)
+        @log.info "Generated costs for in #{billing_time} seconds "+
+          "for account #{account[:name]}"
+        write_records_for(resources, billing_time + delay)
       end
 
       private

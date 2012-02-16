@@ -7,7 +7,7 @@ module CloudCostTracker
     :name         => FAKE_ACCOUNT_NAME,
     :provider     => 'AWS',
     :service      => 'Compute',
-    :polling_time => 10,
+    :delay        => 10,
     :credentials  => {
       :aws_access_key_id => "fake user",
       :aws_secret_access_key => 'fake password'

@@ -47,8 +47,8 @@ module CloudCostTracker
       def write_billing_record_for(resource, hourly_rate, total, max_time = nil)
         account         = resource.tracker_account
         resource_type   = resource.class.name.split('::').last
-        polling_time    = account[:polling_time].to_i
-        maximum_gap     = max_time || polling_time
+        delay           = account[:delay].to_i
+        maximum_gap     = max_time || delay
         return if total == 0.0  # Write no record if the cost is zero
         new_record = BillingRecord.new(
           :provider       => account[:provider],
@@ -57,7 +57,7 @@ module CloudCostTracker
           :resource_id    => resource.identity,
           :resource_type  => resource_type,
           :billing_type   => billing_type,
-          :start_time     => Time.now - polling_time,
+          :start_time     => Time.now - delay,
           :stop_time      => Time.now,
           :cost_per_hour  => hourly_rate,
           :total_cost     => total
