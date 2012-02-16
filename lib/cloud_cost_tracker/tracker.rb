@@ -50,14 +50,14 @@ module CloudCostTracker
       coding_agent = coding_class.new(resources, {:logger => @log})
       coding_agent.setup(resources)
       coding_agent.code(resources)
-      @log.info "Computed billing codes for account #{account[:name]}"
+      @log.info "Generated billing codes for account #{account[:name]}"
     end
 
     # Generates BillingRecords for all Resources in account named +account_name+
     def bill_for_resources(resources)
       return if resources.empty?
       account = resources.first.tracker_account
-      @log.info "Generating costs for account #{account[:name]}"
+      @log.info "Computing costs for account #{account[:name]}"
       billing_agent = Billing::AccountBillingPolicy.new(
                         resources, {:logger => @log})
       billing_agent.setup(resources)

@@ -29,8 +29,9 @@ module CloudCostTracker
       # Defines the default method for billing all resources
       def bill_for(resources)
         return if resources.empty?
-        account = resources.first.tracker_account   # Get account info
-        delay = account[:delay].to_i
+        account       = resources.first.tracker_account # Get account info
+        delay         = account[:delay].to_i
+        polling_time  = account[:last_polling_time] || 0.0
         start_billing = Time.now  # track how long billing takes
         # calculate the hourly and total cost for each resource
         resources.each do |resource|
@@ -42,9 +43,9 @@ module CloudCostTracker
           end
         end
         billing_time = Time.now - start_billing
-        @log.info "Generated costs for in #{billing_time} seconds "+
-          "for account #{account[:name]}"
-        write_records_for(resources, billing_time + delay)
+        @log.info "Generated costs for account #{account[:name]} "+
+          "in #{billing_time} seconds"
+        write_records_for(resources, delay + polling_time + billing_time)
       end
 
       private
