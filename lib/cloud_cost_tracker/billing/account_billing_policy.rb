@@ -33,18 +33,24 @@ module CloudCostTracker
         delay         = account[:delay].to_i
         polling_time  = account[:last_polling_time] || 0.0
         start_billing = Time.now  # track how long billing takes
-        # calculate the hourly and total cost for each resource
-        resources.each do |resource|
-          @agents[resource.class].each do |billing_agent|
-            @total_cost[resource][billing_agent] = billing_agent.
-              get_cost_for_duration(resource, delay).round(PRECISION)
-            @hourly_cost[resource][billing_agent] = billing_agent.
-              get_cost_for_duration(resource, SECONDS_PER_HOUR).round(PRECISION)
+        # calculate the hourly and total cost for all resources, by type
+        (resources.map {|r| r.class}).uniq.each do |resource_class|
+          collection = resources.select {|r| r.class == resource_class}
+          collection_name = collection.first.collection.class.name.split('::').last
+          @log.info "Generating costs for #{collection.size} #{collection_name}"
+          collection.each do |resource|
+            @log.debug "Generating costs for #{resource.tracker_description}"
+            @agents[resource.class].each do |billing_agent|
+              @total_cost[resource][billing_agent] = billing_agent.
+                get_cost_for_duration(resource, delay).round(PRECISION)
+              @hourly_cost[resource][billing_agent] = billing_agent.
+                get_cost_for_duration(resource, SECONDS_PER_HOUR).round(PRECISION)
+            @log.debug "Generated costs for #{resource.tracker_description}"
+            end
           end
+          @log.info "Generated costs for #{collection.size} #{collection_name}"
         end
         billing_time = Time.now - start_billing
-        @log.info "Generated costs for account #{account[:name]} "+
-          "in #{billing_time} seconds"
         write_records_for(resources, delay + polling_time + billing_time)
       end
 
@@ -55,14 +61,23 @@ module CloudCostTracker
       # @param [Integer] slack_time the maximum of seconds between overlapping records
       def write_records_for(resources, slack_time)
         ActiveRecord::Base.connection_pool.with_connection do
-          resources.each do |resource|
-            @agents[resource.class].each do |billing_agent|
-              billing_agent.write_billing_record_for(resource,
-                @hourly_cost[resource][billing_agent],
-                @total_cost[resource][billing_agent],
-                slack_time
-              )
+          # Write BillingRecords for all resources, by type
+          (resources.map {|r| r.class}).uniq.each do |resource_class|
+            collection = resources.select {|r| r.class == resource_class}
+            collection_name = collection.first.collection.class.name.split('::').last
+            @log.info "Writing billing records for "+
+              "#{collection.size} #{collection_name}"
+            collection.each do |resource|
+              @agents[resource.class].each do |billing_agent|
+                billing_agent.write_billing_record_for(resource,
+                  @hourly_cost[resource][billing_agent],
+                  @total_cost[resource][billing_agent],
+                  slack_time
+                )
+              end
             end
+            @log.info "Wrote billing records for "+
+              "#{collection.size} #{collection_name}"
           end
         end
       end
