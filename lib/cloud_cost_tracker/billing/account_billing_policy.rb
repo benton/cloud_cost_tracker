@@ -30,9 +30,11 @@ module CloudCostTracker
       # Defines the default method for billing all resources
       def bill_for(resources)
         return if resources.empty?
+        setup_resource_billing_agents(resources)
         delay         = @account[:delay].to_i
-        polling_time  = @account[:last_polling_time] || 0.0
-        start_billing = Time.now  # track how long billing takes
+        bill_end      = Time.now
+        bill_start    = @account[:preceeding_update_time] || (bill_end - delay)
+        bill_duration = bill_end - bill_start
         # calculate the hourly and total cost for all resources, by type
         @agents.keys.each do |resource_class|
           collection = resources.select {|r| r.class == resource_class}
@@ -44,7 +46,7 @@ module CloudCostTracker
               " in account #{@account[:name]}"
             @agents[resource.class].each do |billing_agent|
               @total_cost[resource][billing_agent] = billing_agent.
-                get_cost_for_duration(resource, delay).round(PRECISION)
+                get_cost_for_duration(resource, bill_duration).round(PRECISION)
               @hourly_cost[resource][billing_agent] = billing_agent.
                 get_cost_for_duration(resource, SECONDS_PER_HOUR).round(PRECISION)
             @log.debug "Computed costs for #{resource.tracker_description}"+
@@ -54,16 +56,15 @@ module CloudCostTracker
           @log.info "Computed costs for #{collection.size}"+
             " #{collection_name} in account #{@account[:name]}"
         end
-        billing_time = Time.now - start_billing
-        write_records_for(resources, delay + polling_time + billing_time)
+        write_records_for(resources, bill_start, bill_end)
       end
 
       private
 
       # Writes the billing records - @total_cost and @total_cost must be populated
       # @param [Array <Fog::Model>] resources the resources to write records for
-      # @param [Integer] slack_time the maximum of seconds between overlapping records
-      def write_records_for(resources, slack_time)
+      # @param [Time] start_time the start time for any new BillingRecords
+      def write_records_for(resources, start_time, end_time)
         ActiveRecord::Base.connection_pool.with_connection do
           # Write BillingRecords for all resources, by type
           @agents.keys.each do |resource_class|
@@ -76,7 +77,7 @@ module CloudCostTracker
                 billing_agent.write_billing_record_for(resource,
                   @hourly_cost[resource][billing_agent],
                   @total_cost[resource][billing_agent],
-                  slack_time
+                  start_time, end_time
                 )
               end
             end

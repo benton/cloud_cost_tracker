@@ -40,15 +40,13 @@ module CloudCostTracker
       end
 
       # Creates or Updates a BillingRecord for this BillingPolicy's @resource
-      # param [Float] hourly_rate the resource's hourly rate for this period
-      # param [Float] hourly_rate the resource's total cost for this period
-      # param [Integer] max_time the maximum separation between separate
-      #  resource records, in seconds
-      def write_billing_record_for(resource, hourly_rate, total, max_time = nil)
+      # @param [Float] hourly_rate the resource's hourly rate for this period
+      # @param [Float] hourly_rate the resource's total cost for this period
+      # @param [Time] start_time the start time for any new BillingRecords
+      def write_billing_record_for(resource, hourly_rate, total,
+        start_time, end_time)
         account         = resource.tracker_account
         resource_type   = resource.class.name.split('::').last
-        delay           = account[:delay].to_i
-        maximum_gap     = max_time || delay
         return if total == 0.0  # Write no record if the cost is zero
         new_record = BillingRecord.new(
           :provider       => account[:provider],
@@ -57,15 +55,16 @@ module CloudCostTracker
           :resource_id    => resource.identity,
           :resource_type  => resource_type,
           :billing_type   => billing_type,
-          :start_time     => Time.now - delay,
-          :stop_time      => Time.now,
+          :start_time     => start_time,
+          :stop_time      => end_time,
           :cost_per_hour  => hourly_rate,
           :total_cost     => total
         )
         new_record.set_codes(resource.billing_codes)
         # Combine BillingRecords within maximim_gap of one another
         last_record = BillingRecord.find_last_matching_record(new_record)
-        if last_record && last_record.overlaps_with(new_record, maximum_gap)
+        merge_window = account[:delay].to_i
+        if last_record && last_record.overlaps_with(new_record, merge_window)
           @log.debug "Updating record #{last_record.id}"+
           " for #{resource.tracker_description}"
           last_record.update_from new_record
