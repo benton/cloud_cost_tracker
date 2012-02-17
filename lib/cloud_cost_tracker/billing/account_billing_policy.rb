@@ -34,7 +34,7 @@ module CloudCostTracker
         polling_time  = account[:last_polling_time] || 0.0
         start_billing = Time.now  # track how long billing takes
         # calculate the hourly and total cost for all resources, by type
-        (resources.map {|r| r.class}).uniq.each do |resource_class|
+        @agents.keys.each do |resource_class|
           collection = resources.select {|r| r.class == resource_class}
           collection_name = collection.first.collection.class.name.split('::').last
           @log.info "Generating costs for #{collection.size} #{collection_name}"
@@ -62,7 +62,7 @@ module CloudCostTracker
       def write_records_for(resources, slack_time)
         ActiveRecord::Base.connection_pool.with_connection do
           # Write BillingRecords for all resources, by type
-          (resources.map {|r| r.class}).uniq.each do |resource_class|
+          @agents.keys.each do |resource_class|
             collection = resources.select {|r| r.class == resource_class}
             collection_name = collection.first.collection.class.name.split('::').last
             @log.info "Writing billing records for "+
@@ -89,6 +89,7 @@ module CloudCostTracker
           @agents[resource_class] = CloudCostTracker::create_billing_agents(
             resource_class, {:logger => @log})
           @agents[resource_class].each {|agent| agent.setup(resources)}
+          @agents.delete(resource_class) if @agents[resource_class].empty?
         end
       end
 

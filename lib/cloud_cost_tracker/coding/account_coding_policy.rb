@@ -34,6 +34,7 @@ module CloudCostTracker
       def code(resources)
         resources.each {|resource| attach_account_codes(resource)}
         classes_to_code = priority_classes + (@agents.keys - priority_classes)
+        classes_to_code.delete_if {|res_class| @agents[res_class] == nil}
         classes_to_code.each do |fog_model_class|
           @log.debug "Coding class #{fog_model_class}"
           collection = resources.select {|r| r.class == fog_model_class}
@@ -52,6 +53,7 @@ module CloudCostTracker
           @agents[resource_class] = CloudCostTracker::create_coding_agents(
             resource_class, {:logger => @log})
           @agents[resource_class].each {|agent| agent.setup}
+          @agents.delete(resource_class) if @agents[resource_class].empty?
         end
       end
 
