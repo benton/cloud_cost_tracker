@@ -51,7 +51,7 @@ module CloudCostTracker
       @tracker.start
       while true do
         sleep 30   # Loop forever
-        @log.info "Total resources = #{@tracker['*::*::*::*'].count}"
+        #@log.info "Total resources = #{@tracker['*::*::*::*'].count}"
       end
     end
 

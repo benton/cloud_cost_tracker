@@ -18,6 +18,7 @@ module CloudCostTracker
           @hourly_cost[resource] ||= Hash.new
           @total_cost[resource]  ||= Hash.new
         end
+        @account = resources.first.tracker_account # Save account info
       end
 
       # Used by subclasses to perform setup each time an account's
@@ -29,26 +30,29 @@ module CloudCostTracker
       # Defines the default method for billing all resources
       def bill_for(resources)
         return if resources.empty?
-        account       = resources.first.tracker_account # Get account info
-        delay         = account[:delay].to_i
-        polling_time  = account[:last_polling_time] || 0.0
+        delay         = @account[:delay].to_i
+        polling_time  = @account[:last_polling_time] || 0.0
         start_billing = Time.now  # track how long billing takes
         # calculate the hourly and total cost for all resources, by type
         @agents.keys.each do |resource_class|
           collection = resources.select {|r| r.class == resource_class}
           collection_name = collection.first.collection.class.name.split('::').last
-          @log.info "Generating costs for #{collection.size} #{collection_name}"
+          @log.info "Computing costs for #{collection.size}"+
+            " #{collection_name} in account #{@account[:name]}"
           collection.each do |resource|
-            @log.debug "Generating costs for #{resource.tracker_description}"
+            @log.debug "Computing costs for #{resource.tracker_description}"+
+              " in account #{@account[:name]}"
             @agents[resource.class].each do |billing_agent|
               @total_cost[resource][billing_agent] = billing_agent.
                 get_cost_for_duration(resource, delay).round(PRECISION)
               @hourly_cost[resource][billing_agent] = billing_agent.
                 get_cost_for_duration(resource, SECONDS_PER_HOUR).round(PRECISION)
-            @log.debug "Generated costs for #{resource.tracker_description}"
+            @log.debug "Computed costs for #{resource.tracker_description}"+
+              " in account #{@account[:name]}"
             end
           end
-          @log.info "Generated costs for #{collection.size} #{collection_name}"
+          @log.info "Computed costs for #{collection.size}"+
+            " #{collection_name} in account #{@account[:name]}"
         end
         billing_time = Time.now - start_billing
         write_records_for(resources, delay + polling_time + billing_time)
@@ -65,8 +69,8 @@ module CloudCostTracker
           @agents.keys.each do |resource_class|
             collection = resources.select {|r| r.class == resource_class}
             collection_name = collection.first.collection.class.name.split('::').last
-            @log.info "Writing billing records for "+
-              "#{collection.size} #{collection_name}"
+            @log.info "Writing billing records for #{collection.size} "+
+              "#{collection_name} in account #{@account[:name]}"
             collection.each do |resource|
               @agents[resource.class].each do |billing_agent|
                 billing_agent.write_billing_record_for(resource,
@@ -76,8 +80,8 @@ module CloudCostTracker
                 )
               end
             end
-            @log.info "Wrote billing records for "+
-              "#{collection.size} #{collection_name}"
+            @log.info "Wrote billing records for #{collection.size} "+
+              "#{collection_name} in account #{@account[:name]}"
           end
         end
       end
