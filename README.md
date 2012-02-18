@@ -65,7 +65,9 @@ Usage [from within Ruby]
   (For the accounts file format, see the example below
     or the included file `config/accounts.yml.example`.)
 
-  The tracker will run asynchronously, with one thread per account.
+  The tracker will run asynchronously, with one thread per account. Initialize
+  it with a `:logger => [Ruby Logger]` option to watch its progress.
+  (see {CloudCostTracker::Tracker#initialize})
 
 You can now query the database at any time, from any application.
 The data model is very simple: one table for BillingRecords, and one for

@@ -13,8 +13,7 @@ module CloudCostTracker
     # @param [Hash] accounts a Hash of account information
     #    (see accounts.yml.example)
     # @param [Hash] options optional additional parameters:
-    #  - :delay (Integer) - Default time between polling of accounts
-    #  - :error_callback (Proc) - A Method or Proc to call if polling errors occur.
+    #  - :delay (Integer) - Override time between polling of accounts
     #    (should take a single Exception as its only required parameter)
     #  - :logger - a Ruby Logger-compatible object
     def initialize(accounts = {}, options={})
