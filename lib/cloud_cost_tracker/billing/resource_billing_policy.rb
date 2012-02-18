@@ -6,43 +6,55 @@ module CloudCostTracker
     # Defines a directory for holding YML pricing constants
     CONSTANTS_DIR = File.join(File.dirname(__FILE__),'../../../config/billing')
 
-    # Some time constants
-    SECONDS_PER_HOUR  = 3600.0
-    SECONDS_PER_DAY   = SECONDS_PER_HOUR * 24
-    SECONDS_PER_YEAR  = SECONDS_PER_DAY * 365
-    SECONDS_PER_MONTH = SECONDS_PER_YEAR / 12
-    # Some size constants
-    BYTES_PER_KB      = 1024
-    BYTES_PER_MB      = BYTES_PER_KB * 1024
-    BYTES_PER_GB      = BYTES_PER_MB * 1024
+    # Some time and size constants
 
+    SECONDS_PER_MINUTE  = 60.0
+    SECONDS_PER_HOUR    = SECONDS_PER_MINUTE * 60
+    SECONDS_PER_DAY     = SECONDS_PER_HOUR * 24
+    SECONDS_PER_YEAR    = SECONDS_PER_DAY * 365
+    SECONDS_PER_MONTH   = SECONDS_PER_YEAR / 12
+    BYTES_PER_KB        = 1024
+    BYTES_PER_MB        = BYTES_PER_KB * 1024
+    BYTES_PER_GB        = BYTES_PER_MB * 1024
+
+    # Implements the logic for billing a single resource.
+    # All Billing Policies should inherit from this class, and define
+    # {#get_cost_for_duration}
     class ResourceBillingPolicy
       include CloudCostTracker
 
-      # Creates an object that implements a default (zero-cost) billing policy
+      # Don't override this method - use {#setup} instead for
+      # one-time behavior
       # @param [Hash] options optional parameters:
       #  - :logger - a Ruby Logger-compatible object
       def initialize(options={})
         @log = options[:logger] || FogTracker.default_logger
       end
 
-      # Used by subclasses to perform setup each time an account is billed
-      # High-latency operations like network transactions that are not
-      # per-resource should be performed here
+      # An initializer called by the framework once per billling cycle.
+      # Override this method if you need to perform high-latency operations,
+      # like network transactions, that should not be performed per-resource.
       def setup(resources) ; end
 
-      # returns the cost for a particular resource over some duration in seconds
+      # Returns the cost for a particular resource over some duration in seconds.
+      #  ALL BILLING POLICY SUBCLASSES SHOULD OVERRIDE THIS METHOD
       def get_cost_for_duration(resource, duration) ; 1.0 end
 
-      # Returns the default billing type for this policy
+      # Returns the default billing type for this policy.
+      # Override this to set a human-readable name for the policy.
+      # Defaults to the last part of the subclass name.
       def billing_type
         self.class.name.split('::').last  #(defaluts to class name)
       end
 
-      # Creates or Updates a BillingRecord for this BillingPolicy's @resource
+      # Creates or Updates a BillingRecord for this BillingPolicy's resource.
+      # Don't override this -- it's called once for each resource by the
+      # {CloudCostTracker::Billing::AccountBillingPolicy}.
+      # @param [Fog::Model] resource the resource for the record to be written
       # @param [Float] hourly_rate the resource's hourly rate for this period
-      # @param [Float] hourly_rate the resource's total cost for this period
+      # @param [Float] total the resource's total cost for this period
       # @param [Time] start_time the start time for any new BillingRecords
+      # @param [Time] end_time the start time for any new BillingRecords
       def write_billing_record_for(resource, hourly_rate, total,
         start_time, end_time)
         account         = resource.tracker_account

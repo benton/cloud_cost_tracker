@@ -2,14 +2,17 @@ module CloudCostTracker
   module Billing
     module AWS
       module RDS
+        # The default billing policy for Amazon RDS server runtime costs
         class ServerBillingPolicy < ResourceBillingPolicy
-          # Load the pricing data
+          # The YAML pricing data is read from config/billing
           CENTS_PER_HOUR = YAML.load(File.read File.join(
-          CONSTANTS_DIR, 'rds-aws-servers', 'us-east-on_demand-mysql.yml'))
+            CONSTANTS_DIR, 'rds-aws-servers', 'us-east-on_demand-mysql.yml'))
 
-          # returns the cost for a particular resource over some duration (in seconds)
-          def get_cost_for_duration(resource, duration)
-            hourly_cost = CENTS_PER_HOUR[zone_setting(resource)][resource.flavor_id]
+          # Returns the runtime cost for a given RDS server
+          # over some duration (in seconds)
+          def get_cost_for_duration(rds_server, duration)
+            hourly_cost =
+              CENTS_PER_HOUR[zone_setting(rds_server)][rds_server.flavor_id]
             (hourly_cost * duration) / SECONDS_PER_HOUR
           end
 

@@ -2,10 +2,12 @@ module CloudCostTracker
   module Coding
     module Compute
       module AWS
-        # Defines the default order in which EC2 resources get "coded"
+        # Implements the logic for attaching billing codes to all resources
+        # in a single AWS EC2 account, and defines the default order in which
+        # EC2 resources get coded.
         class AccountCodingPolicy < CloudCostTracker::Coding::AccountCodingPolicy
 
-          # Defines the order in which EC2 resources are coded
+          # Defines the order in which EC2 resources are coded.
           # @return [Array <Class>] the class names, in preferred coding order
           def priority_classes
             [
@@ -19,7 +21,7 @@ module CloudCostTracker
             ]
           end
 
-          # Acount-wide coding strategy for coding EC2 resources
+          # Translates all AWS Tags into Billing Codes
           def attach_account_codes(resource)
             if resource.respond_to?(:tags) and resource.tags
               resource.tags.each do |key, value|

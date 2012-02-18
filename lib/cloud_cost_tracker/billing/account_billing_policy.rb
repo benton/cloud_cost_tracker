@@ -1,5 +1,9 @@
 module CloudCostTracker
   module Billing
+    # Implements the logic for billing all resources in a single account.
+    # Initializes the necessary ResourceBillingPolicy objects, sorts the
+    # resources by policy, and calls get_cost_for_duration twice on each
+    # resource's policy to compute the charges.
     class AccountBillingPolicy
 
       # Creates an object that implements the default account billing policy
@@ -21,10 +25,9 @@ module CloudCostTracker
         @account = resources.first.tracker_account # Save account info
       end
 
-      # Used by subclasses to perform setup each time an account's
-      # resources are billed
-      # High-latency operations like network transactions that are not
-      # per-resource should be performed here
+      # An initializer called by the framework once per billing cycle.
+      # Override this method if you need to perform high-latency operations,
+      # like network transactions, that should not be performed per-resource.
       def setup(resources) ; end
 
       # Defines the default method for billing all resources

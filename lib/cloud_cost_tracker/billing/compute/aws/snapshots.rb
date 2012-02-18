@@ -2,22 +2,27 @@ module CloudCostTracker
   module Billing
     module Compute
       module AWS
+        # The default billing policy for Amazon EBS Snapshots
+        #
+        # *NOT REALLY WORKING* - AWS does not report the size
+        # of snapshots, so there's no way to accurately verify the cost!  :(
         class SnapshotBillingPolicy < ResourceBillingPolicy
-          # Load the pricing data
+          # The YAML pricing data is read from config/billing
           CENTS_PER_GB_PER_MONTH = YAML.load(File.read File.join(
           CONSTANTS_DIR, 'compute-aws-snapshots.yml'))
 
-          # returns the cost for a particular resource over some duration (in seconds)
-          # TODO - AWS does not seem to report the size of the snapshot, so there's
-          # no way to verify the cost!  :(
+          # Returns the storage cost for a given EBS Snapshot
+          # over some duration (in seconds)
+          # TODO - Make an estimate based on lineage and volume size
           # This code is only accurate if the snapshot is the first for its volume
-          def get_cost_for_duration(resource, duration)
-            CENTS_PER_GB_PER_MONTH[zone(resource)] * resource.volume_size *
+          def get_cost_for_duration(snapshot, duration)
+            return 0.0  # TEMPORARILY DISABLED UNTIL WORKAROUND IS FOUND
+            CENTS_PER_GB_PER_MONTH[zone(snapshot)] * snapshot.volume_size *
             duration / SECONDS_PER_MONTH
           end
 
-          # Follow the snapshot's volume and return its region
-          # chop the availability zone letter from the region
+          # Follows the snapshot's volume and returns its region, and
+          # chops the availability zone letter from the region
           def zone(resource)
             volume = resource.account_resources('volumes').find do |v|
               v.identity == resource.volume_id

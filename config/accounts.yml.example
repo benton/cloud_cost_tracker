@@ -6,20 +6,40 @@ AWS EC2 production account:
     :aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   :delay: 120
   :exclude_resources:
-AWS EC2 development account: 
+AWS S3 account:
   :provider: AWS
-  :service: Compute
-  :credentials: 
+  :service: Storage
+  :credentials:
     :aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
     :aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  :delay: 180
+  :delay: 120
   :exclude_resources:
-  - :flavors
-  - :images
-Rackspace development account: 
-  :provider: Rackspace
-  :service: Compute
-  :credentials: 
-    :rackspace_api_key: XXXXXXXXXXXXXXXXXXXX
-    :rackspace_username: XXXXXXXXX
-  :delay: 180
+#  - :directories # (buckets)
+  - :files # secondary entity - does not work yet
+AWS RDS account:
+  :provider: AWS
+  :service: RDS
+  :credentials:
+    :aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
+    :aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  :delay: 60
+  :exclude_resources:
+  - :parameters # secondary entity - does not work yet
+AWS Route 53 account:
+  :provider: AWS
+  :service: DNS
+  :credentials:
+    :aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
+    :aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  :delay: 60
+  :exclude_resources:
+  - :records # secondary entity - does not work yet
+AWS Elasticache account:
+  :provider: AWS
+  :service: Elasticache
+  :credentials:
+    :aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
+    :aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  :delay: 60
+  :exclude_resources:
+

@@ -2,15 +2,17 @@ module CloudCostTracker
   module Billing
     module AWS
       module RDS
+        # The default billing policy for Amazon RDS server storage costs
         class ServerStorageBillingPolicy < ResourceBillingPolicy
-          # Load the pricing data
+          # The YAML pricing data is read from config/billing
           CENTS_PER_GB_PER_MONTH = YAML.load(File.read File.join(
           CONSTANTS_DIR, 'rds-aws-servers', 'us-east-on_demand-storage.yml'))
 
-          # returns the cost for a particular resource over some duration (in seconds)
-          def get_cost_for_duration(resource, duration)
-            CENTS_PER_GB_PER_MONTH[zone_setting(resource)] *
-            resource.allocated_storage * duration / SECONDS_PER_MONTH
+          # Returns the storage cost for a given RDS server
+          # over some duration (in seconds)
+          def get_cost_for_duration(rds_server, duration)
+            CENTS_PER_GB_PER_MONTH[zone_setting(rds_server)] *
+            rds_server.allocated_storage * duration / SECONDS_PER_MONTH
           end
 
           # returns either 'multi_az' or 'standard',

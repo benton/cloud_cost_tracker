@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.authors     = ["Benton Roberts"]
   s.email       = ["benton@bentonroberts.com"]
   s.homepage    = "http://github.com/benton/cloud_cost_tracker"
-  s.summary     = %q{Generates per-resource, ActiveRecord-compatible }+
-                  %q{BillingRecords for Cloud services}
-  s.description = %q{This gem peridically polls cloud computing services }+
+  s.summary     = %q{Records expenses for cloud computing resources }+
+                  %q{in an ActiveRecord database}
+  s.description = %q{Periodically polls one or more cloud computing accounts }+
                   %q{using the fog gem, and generates ActiveRecord rows }+
                   %q{representing BillingRecords for each discovered resource.}
 

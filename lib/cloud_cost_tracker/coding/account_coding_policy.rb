@@ -1,6 +1,10 @@
-# Defines the default order in which resources get "coded"
 module CloudCostTracker
   module Coding
+    # Implements the logic for attaching billing codes to all resources
+    # in a single account.
+    # Initializes the necessary ResourceCodingPolicy objects, sorts the
+    # resources by policy, and calls {#code} once on each resource's policy,
+    # to compute the billing codes as pairs of Strings.
     class AccountCodingPolicy
 
       # Creates an object that implements a coding policy
@@ -13,24 +17,27 @@ module CloudCostTracker
         setup_resource_coding_agents(resources)
       end
 
-      # Used by subclasses to perform setup each time an account's
-      # resources are coded
-      # High-latency operations like network transactions that are not
-      # per-resource should be performed here
+      # An initializer called by the framework once per bill coding cycle.
+      # Override this method if you need to perform high-latency operations,
+      # like network transactions, that should not be performed per-resource.
       def setup(resources) ; end
 
-      # Defines the order in which resources are coded
+      # Defines the order in which resource collections are coded.
+      # Override this method if you need to code the resource collections
+      # in a particular order. Return an Array of the Fog::Model subclasses.
       # @return [Array <Class>] the class names, in preferred coding order
       def priority_classes
         Array.new
       end
 
-      # Defines an acount-wide coding strategy for coding each resource
+      # Defines an acount-wide coding strategy for coding each resource.
+      # Override this method if you need to write logic for attaching billing
+      # codes to all resources in an account, regardless of collection / type.
       def attach_account_codes(resource) ; end
 
-      # Defines the default method for coding all resources
-      # Attaches Billing Codes (String pairs) to resources, as billing_codes
-      # Resources whose class is in priority_classes are coded first
+      # Defines the default method for coding all resources.
+      # Attaches Billing Codes (String pairs) to resources, as @billing_codes.
+      # Resources whose class is in {#priority_classes} are coded first.
       def code(resources)
         resources.each {|resource| attach_account_codes(resource)}
         classes_to_code = priority_classes + (@agents.keys - priority_classes)

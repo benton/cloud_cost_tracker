@@ -72,8 +72,8 @@ module CloudCostTracker
       save!
     end
 
-    # Creates BillngCodes as necessary from codes, an Array of String pairs
-    # and associates this BilligRecord with those BillingCodes
+    # Creates BillngCodes as necessary from codes, an Array of String pairs,
+    # and associates this BillingRecord with those BillingCodes.
     # @param [Array <Array <String>>] codes the String pairs to use as codes
     def set_codes(codes)
       codes.each do |key, value|

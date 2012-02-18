@@ -2,23 +2,25 @@ module CloudCostTracker
   module Billing
     module Storage
       module AWS
+        # The default billing policy for Amazon S3 buckets
         class DirectoryBillingPolicy < ResourceBillingPolicy
-          # Load the pricing data
+          # The YAML pricing data is read from config/billing
           CENTS_PER_GB_PER_MONTH = YAML.load(File.read File.join(
           CONSTANTS_DIR, 'storage-aws-directories.yml'))
 
-          # returns the cost for a particular resource over some duration (in seconds)
-          def get_cost_for_duration(resource, duration)
-            CENTS_PER_GB_PER_MONTH[zone(resource)] * total_size(resource) *
+          # Returns the runtime cost for a given S3 bucket
+          # over some duration (in seconds)
+          def get_cost_for_duration(s3_bucket, duration)
+            CENTS_PER_GB_PER_MONTH[zone(s3_bucket)] * total_size(s3_bucket) *
             duration / SECONDS_PER_MONTH
           end
 
-          # chop the availability zone letter from the region
+          # Chops the availability zone letter from the region
           def zone(resource)
             'us-east-1'
           end
 
-          # Returns the total size of all a bucket's objecgts, in GB
+          # Returns the total size of all a bucket's objecs, in GB
           def total_size(bucket)
             # check for saved value
             return @bucket_size[bucket] if @bucket_size[bucket]
@@ -30,7 +32,7 @@ module CloudCostTracker
             @bucket_size[bucket] = total_bytes / BYTES_PER_GB.to_f
           end
 
-          # remember each bucket size, because iterating over the objects is
+          # Remembers each bucket size, because iterating over S3 objects is
           # slow, and get_cost_for_duration is called twice
           def setup(resources)
             @bucket_size = Hash.new
