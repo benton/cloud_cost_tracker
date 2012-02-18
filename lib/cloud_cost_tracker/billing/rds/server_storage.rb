@@ -21,6 +21,8 @@ module CloudCostTracker
             resource.multi_az ? 'multi_az' : 'standard'
           end
 
+          def billing_type ; "RDS Instance storage" end
+
         end
       end
     end

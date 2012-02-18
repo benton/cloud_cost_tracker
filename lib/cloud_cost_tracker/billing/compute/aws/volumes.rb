@@ -20,6 +20,9 @@ module CloudCostTracker
           def zone(resource)
             resource.availability_zone.chop
           end
+
+          def billing_type ; "EBS volume storage" end
+
         end
       end
     end

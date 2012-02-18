@@ -34,6 +34,8 @@ module CloudCostTracker
             end
           end
 
+          def billing_type ; "EBS snapshot storage" end
+
         end
       end
     end

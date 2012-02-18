@@ -21,6 +21,8 @@ module CloudCostTracker
             ('windows' == resource.platform) ? 'windows' : 'unix'
           end
 
+          def billing_type ; "EC2 Instance runtime" end
+
         end
       end
     end

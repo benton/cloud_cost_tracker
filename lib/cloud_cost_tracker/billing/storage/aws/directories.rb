@@ -38,6 +38,8 @@ module CloudCostTracker
             @bucket_size = Hash.new
           end
 
+          def billing_type ; "S3 Bucket storage" end
+
         end
       end
     end
