@@ -46,7 +46,10 @@ module CloudCostTracker
           @log.debug "Coding class #{fog_model_class}"
           collection = resources.select {|r| r.class == fog_model_class}
           collection.each do |resource|
-            @agents[fog_model_class].each {|agent| agent.code(resource)}
+            @agents[fog_model_class].each do |agent|
+              @log.debug "Coding #{resource.tracker_description}"
+              agent.code(resource)
+            end
           end
         end
       end
