@@ -17,9 +17,7 @@ Why is it?
 ----------------
 The Cloud Cost Tracker was created in response to the fact that Amazon Web Services does not provide per-resource billing information, which makes *internal* billing very difficult for organizations that make extensive use of AWS. Amazon's proposed solution -- creating, deleting, and cross-authorizing different AWS accounts for each internal billing entity -- is often not workable for organizations that need to perform these operations frequently. As a solution, this gem watches all resources across many accounts, and provides a way to define custom policies for assigning internal billing codes to all recorded expenses.
 
-The Cloud Cost Tracker is intended to be a foundation library, on top of which more complex cloud billing / accounting applications can be built. Custom billing policies for cloud services and resources that are not yet implemented are simple to create, and are discovered automatically.
-
-Also, an executable `cloud_cost_tracker` command-line program is included, which writes BillingRecords using the currently-included default policies:
+The Cloud Cost Tracker is intended to be a foundation library, on top of which more complex cloud billing / accounting applications can be built. Custom billing policies for cloud services and resources that are not yet implemented are simple to create, and are discovered automatically. Nevertheless, an executable `cloud_cost_tracker` command-line program is included, which writes BillingRecords using the currently-included default policies:
 
   * EC2 server instance runtime costs:
     {CloudCostTracker::Billing::Compute::AWS::ServerBillingPolicy}
