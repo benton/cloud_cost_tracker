@@ -8,11 +8,11 @@ module CloudCostTracker
       end
     end
     context "for a resource with several BillingPolicy classes" do
-      it "returns an Array with the correct ResourceBillingPolicy subclass" do
+      it "returns an Array with the correct ResourceBillingPolicy subclasses" do
         agents = CloudCostTracker::create_billing_agents(FAKE_RDS.servers.new.class)
-        agent_classes = agents.map {|agent| agent.class.name.split('::').last}
-        agent_classes.should include 'ServerBillingPolicy'
-        agent_classes.should include 'ServerStorageBillingPolicy'
+        agent_class_names = agents.map {|agent| agent.class.name.split('::').last}
+        agent_class_names.should ==
+          ['ServerBillingPolicy', 'ServerStorageBillingPolicy']
       end
     end
     context "for a resource whose BillingPolicy class is not defined" do

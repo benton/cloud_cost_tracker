@@ -37,7 +37,9 @@ module CloudCostTracker
         end
       end
     end
-    agents
+    puts "agents.first.class = #{agents.first.class}"
+    puts "agents.first.class.name = #{agents.first.class.name}"
+    agents.sort {|a,b| a.class.name <=> b.class.name} # sort by class name
   end
 
   # Creates and returns an Array of ResourceCodingPolicy (subclass) instances
@@ -64,7 +66,7 @@ module CloudCostTracker
         end
       end
     end
-    agents
+    agents.sort {|a,b| a.class.name <=> b.class.name} # sort by class name
   end
 
   # Returns a Class object, of the appropriate subclass of
