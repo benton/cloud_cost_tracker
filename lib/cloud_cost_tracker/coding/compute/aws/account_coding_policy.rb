@@ -14,9 +14,9 @@ module CloudCostTracker
               Fog::Compute::AWS::Tag,
               Fog::Compute::AWS::SecurityGroup,
               Fog::Compute::AWS::KeyPair,
-              Fog::Compute::AWS::Server,
-              Fog::Compute::AWS::Snapshot,
-              Fog::Compute::AWS::Volume,
+              Fog::Compute::AWS::Server,    # pulls codes from security group
+              Fog::Compute::AWS::Volume,    # pulls codes from server
+              Fog::Compute::AWS::Snapshot,  # pulls codes from volume
               Fog::Compute::AWS::Address,
             ]
           end
