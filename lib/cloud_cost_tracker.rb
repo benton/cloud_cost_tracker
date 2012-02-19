@@ -4,8 +4,10 @@ require 'logger'
 # Load generic ResourceBillingPolicy and Coding classes
 require 'cloud_cost_tracker/billing/resource_billing_policy'
 require 'cloud_cost_tracker/coding/resource_coding_policy'
-# Load all ruby files from 'cloud_cost_tracker' directory
-Dir[File.join(File.dirname(__FILE__), "cloud_cost_tracker/**/*.rb")].each {|f| require f}
+# Load all ruby files from 'cloud_cost_tracker' directory - except the tasks
+libs = Dir[File.join(File.dirname(__FILE__), "cloud_cost_tracker/**/*.rb")]
+libs.delete File.join(File.dirname(__FILE__), "cloud_cost_tracker/tasks.rb")
+libs.each {|f| require f}
 
 # Top-level module namespace - defines some static methods for mapping providers,
 # services and resources to their various Billing and Coding Policies
