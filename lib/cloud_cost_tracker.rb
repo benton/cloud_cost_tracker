@@ -37,8 +37,6 @@ module CloudCostTracker
         end
       end
     end
-    puts "agents.first.class = #{agents.first.class}"
-    puts "agents.first.class.name = #{agents.first.class.name}"
     agents.sort {|a,b| a.class.name <=> b.class.name} # sort by class name
   end
 
