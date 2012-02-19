@@ -45,7 +45,7 @@ Install the Cloud Cost Tracker gem, and and your database adaptor of choice.
 Usage [from within Ruby]
 ----------------
 1) Add the BillingRecords table into your database.
-  Just put `require 'CloudCostTracker/tasks'` in your Rakefile, then run
+  Just put `require 'cloud_cost_tracker/tasks'` in your Rakefile, then run
 
     rake db:migrate:tracker
 
