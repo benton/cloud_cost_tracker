@@ -8,7 +8,7 @@ module CloudCostTracker
       end
 
       it "should expose a (null-impementation) setup method" do
-        (Proc.new {@default_policy.setup}).should_not raise_error
+        (Proc.new {@default_policy.setup(nil)}).should_not raise_error
       end
 
       describe '#code' do
