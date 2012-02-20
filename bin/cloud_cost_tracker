@@ -33,8 +33,8 @@ module CloudCostTracker
       parse_options
       @log.info "Loading database configuration from #{ARGV[0]}"
       connect_to_database(YAML::load(File.open(ARGV[0])))
-      @log.info "Loading account information from #{ARGV[1]}"
-      @accounts = YAML::load(File.open(ARGV[1]))
+      @log.info "Loading account information from #{@account_file}"
+      @accounts = YAML::load(File.open(@account_file))
       @tracker = CloudCostTracker::Tracker.new(
         @accounts, {:logger => @log, :delay => @opts[:delay]}
       )
@@ -58,7 +58,7 @@ module CloudCostTracker
     def parse_options
       @opts = {:log_level  => 'INFO'}
       optparse = OptionParser.new do |opts|
-        opts.banner = "Usage: tracker [options] DB_CONFIG.YML ACCOUNTS.YML"
+        opts.banner = "Usage: tracker [options] DB_CONFIG.YML [ACCOUNTS.YML]"
         opts.on('-d', '--delay SECONDS', Integer,
         'Number of seconds between status updates') do |delay|
           @opts[:delay] = delay
@@ -80,8 +80,9 @@ module CloudCostTracker
         exit 1
       end
       if ARGV.count < 2
-        @log.error "A YAML file with account info must be specified"
-        exit 2
+        @account_file = "./config/accounts.yml"
+      else
+        @account_file = ARGV[1]
       end
     end
 

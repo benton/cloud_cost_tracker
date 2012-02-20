@@ -5,6 +5,8 @@ module CloudCostTracker
         # Implements the logic for attaching billing codes to RDS instances
         class ServerCodingPolicy < ResourceCodingPolicy
 
+          # Indexes the security and parameter groups, so that BillingCodes
+          # can be pulled from them quickly when code() is called
           def setup(resources)
             @acc_sec_groups = Hash.new    # Index the security groups
             resources.first.account_resources('security_groups').each do |group|
