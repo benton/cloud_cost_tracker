@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
 
   # Runtime dependencies
   s.add_dependency "fog", '>=1.1.2'
-  s.add_dependency "fog_tracker", '>=0.3'
+  s.add_dependency "fog_tracker", '>=0.3.1'
   s.add_dependency "activerecord", '>=3'
 
   # Development / Test dependencies
