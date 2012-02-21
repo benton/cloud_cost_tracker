@@ -79,7 +79,7 @@ module CloudCostTracker
       codes.each do |key, value|
         self.billing_codes << ( # Find the matching BillingCode or make a new one
           BillingCode.where(:key => key, :value => value).first or
-          BillingCode.new(:key => key, :value => value)
+          BillingCode.create!(:key => key, :value => value)
         )
       end
     end
