@@ -3,11 +3,11 @@ module CloudCostTracker
 
     before(:each) do
       @tracker = Tracker.new(FAKE_ACCOUNTS)
-      BillingRecord.delete_all
+      Billing::BillingRecord.delete_all
     end
 
     after(:each) do
-      BillingRecord.delete_all
+      Billing::BillingRecord.delete_all
     end
 
     describe '#update' do
@@ -22,7 +22,7 @@ module CloudCostTracker
 
       it "Generates BillingRecords for all Resources in its accounts" do
         @tracker.update
-        BillingRecord.all.count.should == 1
+        Billing::BillingRecord.all.count.should == 1
       end
 
       it "Generates billing codes for all Resources in its accounts" do
