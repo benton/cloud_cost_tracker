@@ -8,7 +8,7 @@ module CloudCostTracker
 
     # Some time and size constants
 
-    SECONDS_PER_MINUTE  = 60.0
+    SECONDS_PER_MINUTE  = 60
     SECONDS_PER_HOUR    = SECONDS_PER_MINUTE * 60
     SECONDS_PER_DAY     = SECONDS_PER_HOUR * 24
     SECONDS_PER_YEAR    = SECONDS_PER_DAY * 365
@@ -74,17 +74,29 @@ module CloudCostTracker
         )
         new_record.set_codes(resource.billing_codes)
         # Combine BillingRecords within maximim_gap of one another
+        write_or_merge_with_existing(new_record, account[:delay].to_i)
+      end
+
+      private
+
+      # Writes 'record' into the database if:
+      #   1. there's no previous record for this resource + billing type; or
+      #   2. the previous such record differs in hourly cost or billing codes; or
+      #   3. the records are separated by more than maximum_time_gap
+      # Otherwise, `record` is merged with the previous record that matches its
+      # resource and billing type
+      def write_or_merge_with_existing(new_record, maximum_time_gap)
         write_new_record = true
         last_record = BillingRecord.most_recent_like(new_record)
         # If the previous record for this resource/billing type has the same
         # hourly rate and billing codes, just update the previous record
-        merge_window = account[:delay].to_i
-        if last_record && last_record.overlaps_with(new_record, merge_window)
+        if last_record && last_record.overlaps_with(new_record, maximum_time_gap)
           if (last_record.cost_per_hour.round(PRECISION) ==
               new_record.cost_per_hour.round(PRECISION)) &&
               (last_record.billing_codes == new_record.billing_codes)
-            @log.debug "Updating record #{last_record.id}"+
-                        " for #{resource.tracker_description}"
+            @log.debug "Updating record #{last_record.id} for "+
+              " #{new_record.resource_type} #{new_record.resource_id}"+
+              " in account #{new_record.account}"
             last_record.merge_with new_record
             write_new_record = false
           else  # If the previous record has different rate or codes...
@@ -93,7 +105,8 @@ module CloudCostTracker
           end
         end
         if write_new_record
-          @log.debug "Creating new record for #{resource.tracker_description}"
+          @log.debug "Creating new record for for #{new_record.resource_type}"+
+              " #{new_record.resource_id} in account #{new_record.account}"
           new_record.save!
         end
       end
