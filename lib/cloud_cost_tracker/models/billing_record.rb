@@ -67,7 +67,7 @@ module CloudCostTracker
 
       # Changes the stop time of this BillingRecord to be that of the
       # other_billing_record, then recalculates the total
-      def update_from(other_billing_record)
+      def merge_with(other_billing_record)
         self.stop_time = other_billing_record.stop_time
         total = ((stop_time - start_time) * cost_per_hour) / 3600
         self.total_cost = total
