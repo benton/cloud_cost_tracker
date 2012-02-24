@@ -11,25 +11,6 @@ module CloudCostTracker
         :start_time, :stop_time, :cost_per_hour, :total_cost
       validates_associated :billing_codes
 
-      # Finds and returns the latest BillingRecord that "matches"
-      # billing_record, or nil if none such exists.
-      # The two records must match all their attributes except
-      # start_time, stop_time, and total_cost.
-      # Note that if billing_record is already in the database, this
-      # method can return billing_record itself!
-      # @param [BillingRecord] billing_record the record to match
-      # @return [BillingRecord,nil] the latest "matching" BillingRecord
-      def self.find_last_matching_record(billing_record)
-        match = nil
-        if most_recent = BillingRecord.most_recent_like(billing_record)
-          if most_recent.cost_per_hour.round(PRECISION) ==
-            billing_record.cost_per_hour.round(PRECISION)
-            match = most_recent
-          end
-        end
-        match
-      end
-
       # Returns the most recent BillingRecord for the same resource as
       # the billing_record, or nil of there are none.
       # Note that if billing_record is already in the database, this

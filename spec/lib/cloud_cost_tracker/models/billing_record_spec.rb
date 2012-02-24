@@ -102,29 +102,6 @@ describe BillingRecord do
     end
   end
 
-  describe '#find_last_matching_record' do
-    context "when a matching record exists" do
-      it "Finds and returns the most recent 'matching' BillingRecord" do
-        BillingRecord.find_last_matching_record(@existing_bill).
-          should == @existing_bill
-      end
-    end
-    context "when non-matching records exist" do
-      it "returns nil" do
-        new_bill = BillingRecord.new(RECORD_PARAMETERS.merge(
-          :service => 'some other service'
-        ))
-        BillingRecord.find_last_matching_record(new_bill).should == nil
-      end
-    end
-    context "when no records exist" do
-      it "returns nil" do
-        BillingRecord.delete_all
-        BillingRecord.find_last_matching_record(@next_bill).should == nil
-      end
-    end
-  end
-
   describe '#overlaps_with' do
     context "when invoked with a BillingRecord far away in time" do
       it "returns false" do
