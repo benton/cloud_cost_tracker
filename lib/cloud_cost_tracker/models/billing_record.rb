@@ -32,7 +32,6 @@ module CloudCostTracker
 
       # Returns the most recent BillingRecord for the same resource as
       # the billing_record, or nil of there are none.
-      # The two BillingRecords must also have the same BillingCodes
       # Note that if billing_record is already in the database, this
       # method can return billing_record itself!
       # @param [BillingRecord] other_billing_record the record to match
@@ -46,9 +45,7 @@ module CloudCostTracker
           :resource_type  => billing_record.resource_type,
           :billing_type   => billing_record.billing_type,
         ).order(:stop_time).reverse_order.limit(1)
-        return nil if results.empty?
-        results.first.billing_codes == billing_record.billing_codes ?
-          results.first : nil
+        results.empty? ? nil : results.first
       end
 
       # Returns true if this BillingRecord's duration overlaps (inclusively)

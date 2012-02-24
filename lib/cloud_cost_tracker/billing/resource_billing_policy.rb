@@ -74,13 +74,24 @@ module CloudCostTracker
         )
         new_record.set_codes(resource.billing_codes)
         # Combine BillingRecords within maximim_gap of one another
-        last_record = BillingRecord.find_last_matching_record(new_record)
+        write_new_record = true
+        last_record = BillingRecord.most_recent_like(new_record)
+        # If the previous record for this resource/billing type has the same
+        # hourly rate and billing codes, just update the previous record
         merge_window = account[:delay].to_i
         if last_record && last_record.overlaps_with(new_record, merge_window)
-          @log.debug "Updating record #{last_record.id}"+
-          " for #{resource.tracker_description}"
-          last_record.update_from new_record
-        else
+          if (last_record.cost_per_hour == new_record.cost_per_hour) &&
+            (last_record.billing_codes == new_record.billing_codes)
+            @log.debug "Updating record #{last_record.id}"+
+                        " for #{resource.tracker_description}"
+            last_record.merge_with new_record
+            write_new_record = false
+          else  # If the previous record has different rate or codes...
+            # Make the new record begin where the previous one leaves off
+            new_record.start_time = last_record.stop_time
+          end
+        end
+        if write_new_record
           @log.debug "Creating new record for #{resource.tracker_description}"
           new_record.save!
         end
