@@ -80,8 +80,9 @@ module CloudCostTracker
         # hourly rate and billing codes, just update the previous record
         merge_window = account[:delay].to_i
         if last_record && last_record.overlaps_with(new_record, merge_window)
-          if (last_record.cost_per_hour == new_record.cost_per_hour) &&
-            (last_record.billing_codes == new_record.billing_codes)
+          if (last_record.cost_per_hour.round(PRECISION) ==
+              new_record.cost_per_hour.round(PRECISION)) &&
+              (last_record.billing_codes == new_record.billing_codes)
             @log.debug "Updating record #{last_record.id}"+
                         " for #{resource.tracker_description}"
             last_record.merge_with new_record
