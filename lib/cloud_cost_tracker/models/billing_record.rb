@@ -49,7 +49,7 @@ module CloudCostTracker
         self.stop_time = other_billing_record.stop_time
         total = ((stop_time - start_time) * cost_per_hour) / 3600
         self.total_cost = total
-        save!
+        ActiveRecord::Base.connection_pool.with_connection {save!}
       end
 
       # Creates BillngCodes as necessary from codes, an Array of String pairs,
@@ -58,8 +58,9 @@ module CloudCostTracker
       def set_codes(codes)
         codes.each do |key, value|
           self.billing_codes << ( # Find the matching BillingCode or make a new one
-            BillingCode.where(:key => key, :value => value).first or
-            BillingCode.create!(:key => key, :value => value)
+            ActiveRecord::Base.connection_pool.with_connection do
+              BillingCode.where(:key => key, :value => value).first_or_create!
+            end
           )
         end
       end

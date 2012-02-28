@@ -107,7 +107,7 @@ module CloudCostTracker
         if write_new_record
           @log.debug "Creating new record for for #{new_record.resource_type}"+
               " #{new_record.resource_id} in account #{new_record.account}"
-          new_record.save!
+          ActiveRecord::Base.connection_pool.with_connection {new_record.save!}
         end
       end
     end

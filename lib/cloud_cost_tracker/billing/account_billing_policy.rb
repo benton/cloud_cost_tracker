@@ -68,7 +68,7 @@ module CloudCostTracker
       # @param [Array <Fog::Model>] resources the resources to write records for
       # @param [Time] start_time the start time for any new BillingRecords
       def write_records_for(resources, start_time, end_time)
-        ActiveRecord::Base.connection_pool.with_connection do
+        #ActiveRecord::Base.connection_pool.with_connection do
           # Write BillingRecords for all resources, by type
           @agents.keys.each do |resource_class|
             collection = resources.select {|r| r.class == resource_class}
@@ -87,7 +87,7 @@ module CloudCostTracker
             @log.info "Wrote billing records for #{collection.size} "+
               "#{collection_name} in account #{@account[:name]}"
           end
-        end
+        #end
       end
 
       # Builds a Hash of BillingPolicy agents, indexed by resource Class name
