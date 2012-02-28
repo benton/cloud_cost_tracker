@@ -7,7 +7,7 @@ module CloudCostTracker
 
       # Validations
       validates :key,   :presence => true
-      validates :value, :uniqueness => {:scope => :key}
+      #validates :value, :uniqueness => {:scope => :key}
 
     end
   end

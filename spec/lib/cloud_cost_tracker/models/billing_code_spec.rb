@@ -24,11 +24,11 @@ module CloudCostTracker
         @existing_code.should be_valid
       end
 
-      it "is not valid if an identical code is already saved" do
-        BillingCode.new(
-          :key => 'fake key', :value => 'fake value'
-        ).should_not be_valid
-      end
+      #it "is not valid if an identical code is already saved" do
+      #  BillingCode.new(
+      #    :key => 'fake key', :value => 'fake value'
+      #  ).should_not be_valid
+      #end
 
     end
   end
