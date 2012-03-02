@@ -17,9 +17,8 @@ namespace :db do
       config_file = DEFAULT_CONFIG_FILE
       config_file = './config/database.yml' if File.exists? './config/database.yml'
       config_file = ENV['DB_CONFIG_FILE'] if ENV['DB_CONFIG_FILE']
-
       ActiveRecord::Base.establish_connection(
-        YAML::load(File.open(config_file)))
+        YAML::load(File.open(config_file))[ENV['RACK_ENV'] || 'development'])
     end
 
   end
