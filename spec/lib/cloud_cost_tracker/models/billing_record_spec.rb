@@ -184,6 +184,17 @@ describe BillingRecord do
     end
   end
 
+  describe '#to_hash' do
+    it "returns a Hash of the record's attributes" do
+      @existing_bill.to_hash['provider'].should == "fake_provider_name"
+      @existing_bill.to_hash['service'].should == "fake_service_name"
+      @existing_bill.to_hash['account'].should == "fake_account_ID"
+      @existing_bill.to_hash['resource_id'].should == "fake_resource_ID"
+      @existing_bill.to_hash['resource_type'].should == "fake_resource_type"
+      @existing_bill.to_hash['billing_type'].should == "fake_billing_type"
+    end
+  end
+
 end
 end
 end

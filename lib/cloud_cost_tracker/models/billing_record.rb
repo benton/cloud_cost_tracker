@@ -65,6 +65,23 @@ module CloudCostTracker
         end
       end
 
+      # @return [Hash] a Hash representation of this BillingRecord.
+      def to_hash
+        {
+          'id'            => id,
+          'provider'      => provider,
+          'service'       => service,
+          'account'       => account,
+          'resource_id'   => resource_id,
+          'resource_type' => resource_type,
+          'billing_type'  => billing_type,
+          'start_time'    => start_time,
+          'stop_time'     => stop_time,
+          'cost_per_hour' => cost_per_hour,
+          'total_cost'    => total_cost
+        }
+      end
+
     end
   end
 end
