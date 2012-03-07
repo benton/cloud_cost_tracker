@@ -186,12 +186,18 @@ describe BillingRecord do
 
   describe '#to_hash' do
     it "returns a Hash of the record's attributes" do
+      @existing_bill.billing_codes = [
+        BillingCode.new(:key => 'key1', :value => 'val1'),
+        BillingCode.new(:key => 'key2', :value => 'val2'),
+      ]
       @existing_bill.to_hash['provider'].should == "fake_provider_name"
       @existing_bill.to_hash['service'].should == "fake_service_name"
       @existing_bill.to_hash['account'].should == "fake_account_ID"
       @existing_bill.to_hash['resource_id'].should == "fake_resource_ID"
       @existing_bill.to_hash['resource_type'].should == "fake_resource_type"
       @existing_bill.to_hash['billing_type'].should == "fake_billing_type"
+      @existing_bill.to_hash['billing_codes'].should ==
+        [['key1', 'val1'], ['key2', 'val2']]
     end
   end
 

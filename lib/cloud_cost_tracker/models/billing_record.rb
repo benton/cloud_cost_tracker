@@ -78,7 +78,8 @@ module CloudCostTracker
           'start_time'    => start_time,
           'stop_time'     => stop_time,
           'cost_per_hour' => cost_per_hour,
-          'total_cost'    => total_cost
+          'total_cost'    => total_cost,
+          'billing_codes' => billing_codes.map {|c| [c.key, c.value]}
         }
       end
 
