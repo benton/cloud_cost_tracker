@@ -3,6 +3,7 @@
 Gemfile.lock
 config/accounts.yml
 config/database.yml
+config/policies
 pkg/*
 *~
 .DS_Store
