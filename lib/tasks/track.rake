@@ -1,7 +1,7 @@
 desc "Runs the tracker [LOG_LEVEL=[INFO]]"
 task :track do
   Rake::Task["db:migrate:db_connect"].invoke
-  require "./lib/cloud_cost_tracker"
+  require File.join(File.dirname(__FILE__), '..', 'cloud_cost_tracker')
 
   # Setup logging
   log = FogTracker.default_logger(STDOUT)
