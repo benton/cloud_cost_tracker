@@ -1,3 +1,4 @@
+ENV['RACK_ENV'] = 'test'
 Bundler.require # Load all gems and libs
 
 Fog.mock!       # Don't try to connect to the network
@@ -28,11 +29,15 @@ module CloudCostTracker
   )
 end
 
-# Establish ActiveRecord connection
-db_conf_file = File.expand_path('../../config/database.yml', __FILE__)
-db_config = YAML::load(File.open(db_conf_file))[ENV['RACK_ENV'] || 'development']
+## Establish ActiveRecord connection
+db_conf_file = File.expand_path('../../config/database.example.yml', __FILE__)
+db_conf_file = ENV['DB_CONFIG_FILE'] if ENV['DB_CONFIG_FILE']
+puts "Reading DB config file #{db_conf_file}..."
+db_config = YAML::load(File.open(db_conf_file))[ENV['RACK_ENV'] || 'test']
 puts "Using DB #{db_config['database']}..."
 ActiveRecord::Base.establish_connection(db_config)
+migration_dir = File.expand_path('../../db/migrate', __FILE__)
+ActiveRecord::Migrator.migrate migration_dir
 
 # Require RSpec support files. Logging is configured there
 support_files = Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")]

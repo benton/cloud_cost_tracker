@@ -36,18 +36,20 @@ Installation
 ----------------
 Install the Cloud Cost Tracker gem, and and your database adaptor of choice.
 
-    gem install cloud_cost_tracker mysql2
+    gem install cloud_cost_tracker [mysql2]
 
 
 ----------------
 Usage [from within Ruby]
 ----------------
 1) Add the BillingRecords table into your database.
-  Just put `require 'cloud_cost_tracker/tasks'` in your Rakefile, then run
+   Just put `require 'cloud_cost_tracker/tasks'` in your Rakefile, then run:
 
     rake db:migrate:tracker
 
-2) In your Ruby app, `require` the gem, and set up an ActiveRecord connection. In Rails, the connection is set up for you automatically on startup, but here's an example for a non-Rails app:
+2) In your Ruby app, `require` the gem, and set up an ActiveRecord connection.
+   In Rails, the connection is set up for you automatically on startup,
+   but here's an example for a non-Rails app:
 
     require 'cloud_cost_tracker'
     ActiveRecord::Base.establish_connection({
@@ -55,38 +57,31 @@ Usage [from within Ruby]
       :pool => 6    # reserve at least one connection per tracked account
     })
 
-3) Track all accounts loaded from a YAML file (or the Hash equivalent):
+3) Track all accounts loaded from a YAML file.
+  (For the accounts file format, see the example below,
+    or the included file `config/accounts.example.yml`.)
 
-    tracker = CloudCostTracker::Tracker.new(YAML::load(File.read 'accounts.yml'))
-    tracker.start
+    tracker = CloudCostTracker::Tracker.new(
+      YAML::load(File.read 'accounts.yml'), :logger => Logger.new(STDOUT)
+    ).start
 
-  (For the accounts file format, see the example below
-    or the included file `config/accounts.yml.example`.)
-
-  The tracker will run asynchronously, with one thread per account. Initialize
-  it with a `:logger => [Ruby Logger]` option to watch its progress.
-  (see {CloudCostTracker::Tracker#initialize})
-
-You can now query the database at any time, from any application.
-The data model is very simple: one table for BillingRecords, and one for
-BillingCodes, related many-to-many.
+The tracker will run asynchronously, with one thread per account.
+Once the first account has been polled, and its resources coded,
+{CloudCostTracker::Billing::BillingRecord}s will be generated for
+each billable resource, and available through ActiveRecord.
 
 
 ----------------
 Usage [from the command line]
 ----------------
-1) First, generate an ActiveRecord-style database configuration file.
-   Here are the contents of a sample `database.yml`:
+1) First, generate an ActiveRecord/Rails-style database configuration file.
+  (see {file:config/database.example.yml})
 
-     adapter:   mysql2
-     database:  cloud_cost_tracker
-     username:  root
-     pool:      10  # reserve at least one connection per tracked account
+2) Create the database to contain the data (if not using sqlite3).
+   The necessary tables will be created / updated by an ActiveRecord Migration.
 
-  If necessary, create the database to contain the data. The necessary tables will be created / updated by an ActiveRecord Migration.
-
-2) Generate a YAML file containing your Fog accounts and their credentials:
-   Here are the contents of a sample `accounts.yml`:
+3) Generate a YAML file containing your Fog accounts and their credentials:
+   Here are the contents of the example file: `config/accounts.example.yml`:
 
      AWS EC2 production account:   # The account name - can be anything
        :provider: AWS      # This is the Fog provider Module
@@ -109,20 +104,23 @@ Usage [from the command line]
        :exclude_resources:  # Pricing by Bucket is supported, but not by Object
        - :files # This is required for S3 - objects can't be polled directly
 
-3) Run the tracker, and point it at the both the database config file and the accounts file.
+4) Run the tracker, and point it at the both the database config file
+   and the accounts file.
 
     cloud_cost_tracker database.yml accounts.yml --migrate
 
-  The `--migrate` argument updates the database to the latest version of the schema, and is only necessary for new databases, or when upgrading to a new version of the gem.
+  The `--migrate` argument updates the database to the latest version of the
+  schema, and is only necessary for new databases, or when upgrading to a new
+  version of the gem.
 
 
 ----------------
 Development
 ----------------
 This project is still in its early stages, but most of the framework is in place.
-More resource costs need to be modeled as BillingPolicies,
-but the patterns for doing so are now laid out.
-For the details, see {file:writing-billing-policies.md},
+More resource costs need to be modeled as
+{CloudCostTracker::Billing::ResourceBillingPolicy} classes, but the patterns for
+doing so are now laid out. For the details, see {file:writing-billing-policies.md},
 {file:writing-coding-policies.md}, and the API documentation.
 
 Helping hands are appreciated!
@@ -130,20 +128,16 @@ Helping hands are appreciated!
 ----------------
 *Getting started with development*
 
-1) Install project dependencies.
+1) Install project dependencies
 
     gem install rake bundler
 
-2) Fetch the project code and bundle up...
+2) Fetch the project code
 
     git clone https://github.com/benton/cloud_cost_tracker.git
     cd cloud_cost_tracker
-    bundle
 
-3) Create a SQLite database for development
+3) Bundle up and run the tests
 
-    rake db:migrate:tracker
+    bundle && rake
 
-4) Run the tests:
-
-    rake

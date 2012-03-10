@@ -1,0 +1,18 @@
+development:
+  username: root
+  pool: 10             # Best to use at lease one connection per tracked account
+  timeout: 10000       # Leave this nice and long
+  adapter: sqlite3
+  database: db/cloud_cost_tracker_development.sqlite3
+test:
+  username: root
+  pool: 10             # Best to use at lease one connection per tracked account
+  timeout: 10000       # Leave this nice and long
+  adapter: sqlite3
+  database: db/cloud_cost_tracker_test.sqlite3
+production:
+  username: root
+  pool: 10             # Best to use at lease one connection per tracked account
+  timeout: 10000       # Leave this nice and long
+  adapter: sqlite3
+  database: db/cloud_cost_tracker_production.sqlite3

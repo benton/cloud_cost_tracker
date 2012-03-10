@@ -38,11 +38,15 @@ module CloudCostTracker
 
       # Returns the cost for a particular resource over some duration in seconds.
       #  ALL BILLING POLICY SUBCLASSES SHOULD OVERRIDE THIS METHOD
+      # @param [Fog::Model] resource the resource to be billed
+      # @param [Integer] duration the number of seconds for this billing period.
+      # @return [Float] The amount the resource cost over duration seconds.
       def get_cost_for_duration(resource, duration) ; 1.0 end
 
       # Returns the default billing type for this policy.
       # Override this to set a human-readable name for the policy.
       # Defaults to the last part of the subclass name.
+      # @return [String] a description of the costs incurred under this policy.
       def billing_type
         self.class.name.split('::').last  #(defaluts to class name)
       end
