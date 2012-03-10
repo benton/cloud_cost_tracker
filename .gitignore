@@ -2,6 +2,7 @@
 .bundle
 Gemfile.lock
 config/accounts.yml
+config/database.yml
 pkg/*
 *~
 .DS_Store
