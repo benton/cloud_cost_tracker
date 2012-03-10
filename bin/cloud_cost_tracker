@@ -32,19 +32,15 @@ module CloudCostTracker
       @log = FogTracker.default_logger(STDOUT)
       parse_options
       @log.info "Loading database configuration from #{ARGV[0]}"
-      connect_to_database(YAML::load(File.open(ARGV[0])))
+      config = YAML::load(File.open(ARGV[0]))[ENV['RACK_ENV'] || 'development']
+      puts "Using database #{config['database']}..."
+      ActiveRecord::Base.establish_connection(config)
+      migrate if @opts[:migrate]
       @log.info "Loading account information from #{@account_file}"
       @accounts = YAML::load(File.open(@account_file))
       @tracker = CloudCostTracker::Tracker.new(
         @accounts, {:logger => @log, :delay => @opts[:delay]}
       )
-    end
-
-    def connect_to_database(db_config)
-      @log.info "Connecting to database #{db_config['database']}"
-      require 'active_record'
-      ::ActiveRecord::Base.establish_connection(db_config)
-      migrate if @opts[:migrate]
     end
 
     def go
