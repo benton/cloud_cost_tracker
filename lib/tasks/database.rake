@@ -15,7 +15,7 @@ namespace :db do
     task :db_connect do
       config_file = ENV['DB_CONFIG_FILE'] || './config/database.yml'
       puts "Using database config file #{config_file}..."
-      config = YAML::load(File.open(config_file))[ENV['RACK_ENV'] || 'development']
+      config = YAML::load(File.open(config_file))[CloudCostTracker.env]
       puts "Using database #{config['database']}..."
       ActiveRecord::Base.establish_connection(config)
     end

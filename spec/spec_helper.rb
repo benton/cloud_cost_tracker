@@ -41,7 +41,7 @@ else
   ENV['DB_CONFIG_FILE'] = db_conf_file
 end
 puts "Reading DB config file #{db_conf_file}..."
-db_config = YAML::load(File.open(db_conf_file))[ENV['RACK_ENV'] || 'test']
+db_config = YAML::load(File.open(db_conf_file))[CloudCostTracker.env]
 puts "Using DB #{db_config['database']}..."
 ActiveRecord::Base.establish_connection(db_config)
 migration_dir = File.expand_path('../../db/migrate', __FILE__)

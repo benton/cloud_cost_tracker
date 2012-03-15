@@ -32,7 +32,7 @@ module CloudCostTracker
       @log = FogTracker.default_logger(STDOUT)
       parse_options
       @log.info "Loading database configuration from #{ARGV[0]}"
-      config = YAML::load(File.open(ARGV[0]))[ENV['RACK_ENV'] || 'development']
+      config = YAML::load(File.open(ARGV[0]))[CloudCostTracker.env]
       puts "Using database #{config['database']}..."
       ActiveRecord::Base.establish_connection(config)
       migrate if @opts[:migrate]

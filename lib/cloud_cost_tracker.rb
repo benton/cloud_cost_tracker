@@ -13,6 +13,12 @@ libs.each {|f| require f}
 # services and resources to their various Billing and Coding Policies
 module CloudCostTracker
 
+  # Returns the current RACK_ENV or RAILS_ENV, or 'development' if not set.
+  # @return [String] ENV[RACK_ENV] || ENV[RAILS_ENV] || development
+  def self.env
+    (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development').downcase
+  end
+
   # Creates and returns an Array of ResourceBillingPolicy (subclass) instances
   # for billing the given +resource+, or an empty Array of none are found
   # @param [Class] resource_class the Class object for the billed resource
