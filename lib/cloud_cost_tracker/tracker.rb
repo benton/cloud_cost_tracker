@@ -9,6 +9,8 @@ module CloudCostTracker
     def_delegators :@tracker,:start,:stop,:query,:[],:update,
             :running?,:types_for_account,:logger
 
+    attr_reader :accounts
+
     # Creates an object for tracking Fog accounts in an ActiveRecord database
     # @param [Hash] accounts a Hash of account information
     #    (see accounts.yml.example)
@@ -17,19 +19,18 @@ module CloudCostTracker
     #    (should take a single Exception as its only required parameter)
     #  - :logger - a Ruby Logger-compatible object
     def initialize(accounts = {}, options={})
-      @accounts = accounts
       @delay    = options[:delay]
       @log      = options[:logger] || FogTracker.default_logger
-      setup_fog_tracker
       @running  = false
+      @accounts = setup_fog_tracker(accounts)
     end
 
     private
 
     # Creates a FogTracker::Tracker that calls bill_for_account
     # each time an account is refreshed
-    def setup_fog_tracker
-      @tracker = FogTracker::Tracker.new(@accounts,
+    def setup_fog_tracker(accounts)
+      @tracker = FogTracker::Tracker.new(accounts,
         {:delay => @delay, :logger => @log,
           :callback => Proc.new do |resources|
             code_resources(resources)
@@ -37,6 +38,7 @@ module CloudCostTracker
           end
         }
       )
+      @tracker.accounts
     end
 
     # Adds billing codes for all resources
