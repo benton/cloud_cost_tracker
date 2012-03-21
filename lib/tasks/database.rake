@@ -1,4 +1,5 @@
 require 'active_record'
+require 'cloud_cost_tracker'
 
 namespace :db do
   namespace :migrate do
