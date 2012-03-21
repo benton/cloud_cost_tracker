@@ -8,7 +8,7 @@ task :track do
   log.level = ::Logger.const_get((ENV['LOG_LEVEL'] || 'INFO').to_sym)
 
   log.info "Loading account information..."
-  accounts = YAML.load(File.read './config/accounts.yml')
+  accounts = FogTracker.read_accounts './config/accounts.yml'
 
   log.info "Loading custom coding policies..."
   Dir["./config/policies/*.rb"].each {|f| require f}

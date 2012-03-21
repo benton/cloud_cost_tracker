@@ -12,11 +12,30 @@ libs.each {|f| require f}
 # Top-level module namespace - defines some static methods for mapping providers,
 # services and resources to their various Billing and Coding Policies
 module CloudCostTracker
-
   # Returns the current RACK_ENV or RAILS_ENV, or 'development' if not set.
   # @return [String] ENV[RACK_ENV] || ENV[RAILS_ENV] || development
   def self.env
     (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development').downcase
+  end
+
+  # Connects to the database defined in db_file.
+  # Uses the YAML section indexed by {CloudCostTracker#env}.
+  # @param db_file the path to a Rails-style YAML DB config file.
+  # @return [Hash] the current envinronment's database configuration.
+  def self.connect_to_database(db_file = ENV['DB_CONFIG_FILE'])
+    db_file ||= "./config/database.yml"
+    all_dbs = YAML::load(File.read db_file)
+    if not ::ActiveRecord::Base.connected?
+      ::ActiveRecord::Base.establish_connection(all_dbs[CloudCostTracker.env])
+    end
+    all_dbs[CloudCostTracker.env]
+  end
+
+  # Loads account information defined in account_file.
+  # @param account_file the path to a YAML file (see accounts.yml.example).
+  # @return [Hash] the cleaned, validated Hash of account info.
+  def self.read_accounts(account_file = ENV['ACCOUNT_FILE'])
+    FogTracker.read_accounts(account_file)
   end
 
   # Creates and returns an Array of ResourceBillingPolicy (subclass) instances
