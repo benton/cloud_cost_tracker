@@ -1,3 +1,4 @@
+require 'cloud_cost_tracker/coding/account_coding_policy'
 module CloudCostTracker
   module Coding
     module Compute
