@@ -33,12 +33,29 @@ module CloudCostTracker
       @tracker = FogTracker::Tracker.new(accounts,
         {:delay => @delay, :logger => @log,
           :callback => Proc.new do |resources|
-            code_resources(resources)
-            bill_for_resources(resources)
+            checked_resources = sanity_check(resources)
+            code_resources(checked_resources)
+            bill_for_resources(checked_resources)
           end
         }
       )
       @tracker.accounts
+    end
+
+
+    # Make sure returned resources are billable and codeable
+    # @param [Array<Fog::Model>] resources the resources to check
+    # @return [Array<Fog::Model>] the resources deemed OK
+    def sanity_check(resources)
+      resources.select do |resource|
+        if resource.identity == nil
+          @log.warn "Found a Fog::Model with no identity. Removing it..."
+          @log.debug "BAD Fog::Model instance: #{resource.inspect}"
+          false   # return false from select to indicate resource is bad
+        else
+          true    # return true from select to indicate resource is OK
+        end
+      end
     end
 
     # Adds billing codes for all resources
