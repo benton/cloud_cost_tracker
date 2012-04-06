@@ -1,0 +1,15 @@
+# Amazon Elasticache On-demand instance pricing by Region
+# From http://aws.amazon.com/elasticache/pricing/
+---
+# These numbers are in cents per hour per node in the cluster
+us-east:
+  # Standard On-Demand Instances
+  cache.m1.small:     9.0
+  cache.m1.large:     36.0
+  cache.m1.xlarge:    72.0
+  # Hi-Memory On-Demand Instances
+  cache.m2.xlarge:    50.5
+  cache.m2.2xlarge:   101.0
+  cache.m2.4xlarge:   202.0
+  # Hi-CPU On-Demand Instances
+  cache.c1.xlarge:    74.0
