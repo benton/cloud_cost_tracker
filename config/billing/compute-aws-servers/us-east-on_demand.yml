@@ -4,17 +4,18 @@
 unix:
   # Standard On-Demand Instances
   m1.small:     8.5
-  m1.large:     34.0
-  m1.xlarge:    68.0
+  m1.medium:    16.0
+  m1.large:     32.0
+  m1.xlarge:    64.0
   # Micro On-Demand Instances
   t1.micro:     2.0
   # Hi-Memory On-Demand Instances
-  m2.xlarge:    50.0
-  m2.2xlarge:   100.0
-  m2.4xlarge:   200.0
+  m2.xlarge:    45.0
+  m2.2xlarge:   90.0
+  m2.4xlarge:   180.0
   # Hi-CPU On-Demand Instances
-  c1.medium:    17.0
-  c1.xlarge:    68.0
+  c1.medium:    16.5
+  c1.xlarge:    66.0
   # Cluster Compute Instances
   cc1.4xlarge:  130.0
   cc1.8xlarge:  240.0
@@ -23,18 +24,19 @@ unix:
 
 windows:
   # Standard On-Demand Instances
-  m1.small:     12.0
-  m1.large:     48.0
-  m1.xlarge:    96.0
+  m1.small:     11.5
+  m1.medium:    23.0
+  m1.large:     46.0
+  m1.xlarge:    92.0
   # Micro On-Demand Instances
-  t1.micro:     3.0
+  t1.micro:     2.0
   # Hi-Memory On-Demand Instances
-  m2.xlarge:    62.0
-  m2.2xlarge:   124.0
-  m2.4xlarge:   248.0
+  m2.xlarge:    57.0
+  m2.2xlarge:   114.0
+  m2.4xlarge:   228.0
   # Hi-CPU On-Demand Instances
-  c1.medium:    29.0
-  c1.xlarge:    116.0
+  c1.medium:    28.5
+  c1.xlarge:    114.0
   # Cluster Compute Instances
   cc1.4xlarge:  161.0
   cc1.8xlarge:  297.0
