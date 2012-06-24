@@ -77,7 +77,7 @@ describe ResourceBillingPolicy do
           @default_policy.write_billing_record_for(
             @resource, 5000000.0, 34.0, @end_time - 1, @end_time + 99)
           result = BillingRecord.where(:resource_id => @resource.identity).last
-          result.start_time.should == @existing_record.stop_time
+          result.start_time.to_s.should == @existing_record.stop_time.to_s
         end
       end
     end
