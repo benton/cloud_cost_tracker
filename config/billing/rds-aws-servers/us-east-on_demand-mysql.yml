@@ -4,21 +4,23 @@
 # Standard Deployment
 standard:
   # DB Instance Class (On-Demand)
-  db.m1.small:     11.0
-  db.m1.large:     44.0
-  db.m1.xlarge:    88.0
+  db.t1.micro:      2.5
+  db.m1.small:     10.5
+  db.m1.large:     41.5
+  db.m1.xlarge:    83.0
   # High-Memory DB Instance Class
-  db.m2.xlarge:    65.0
-  db.m2.2xlarge:   130.0
-  db.m2.4xlarge:   260.0
+  db.m2.xlarge:    58.5
+  db.m2.2xlarge:   117.0
+  db.m2.4xlarge:   234.0
 
 # Multi-AZ Deployment
 multi_az:
   # DB Instance Class (On-Demand)
-  db.m1.small:     22.0
-  db.m1.large:     88.0
+  db.t1.micro:      5.0
+  db.m1.small:     21.0
+  db.m1.large:     83.0
   db.m1.xlarge:    166.0
   # High-Memory DB Instance Class
-  db.m2.xlarge:    130.0
-  db.m2.2xlarge:   260.0
-  db.m2.4xlarge:   520.0
+  db.m2.xlarge:    117.0
+  db.m2.2xlarge:   234.0
+  db.m2.4xlarge:   468.0
