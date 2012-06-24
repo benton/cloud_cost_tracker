@@ -49,8 +49,8 @@ module CloudCostTracker
     def sanity_check(resources)
       resources.select do |resource|
         if resource.identity == nil
-          @log.warn "Found a Fog::Model with no identity. Removing it..."
-          @log.debug "BAD Fog::Model instance: #{resource.inspect}"
+          @log.warn "Found a #{resource.class} with no identity. Removing it..."
+          @log.debug "BAD #{resource.class} instance: #{resource.inspect}"
           false   # return false from select to indicate resource is bad
         else
           true    # return true from select to indicate resource is OK
