@@ -1,9 +1,11 @@
 require 'active_record'
 require 'logger'
 
-# Load generic ResourceBillingPolicy and Coding classes
+# Load generic Policy classes
 require 'cloud_cost_tracker/billing/resource_billing_policy'
 require 'cloud_cost_tracker/coding/resource_coding_policy'
+require 'cloud_cost_tracker/billing/account_billing_policy'
+require 'cloud_cost_tracker/coding/account_coding_policy'
 # Load all ruby files from 'cloud_cost_tracker' directory - except the tasks
 libs = Dir[File.join(File.dirname(__FILE__), "cloud_cost_tracker/**/*.rb")]
 libs.delete File.join(File.dirname(__FILE__), "cloud_cost_tracker/tasks.rb")
