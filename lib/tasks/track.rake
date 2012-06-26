@@ -1,4 +1,4 @@
-desc "Runs the tracker [LOG_LEVEL=[INFO]]"
+desc "Runs the tracker [LOG_LEVEL=[INFO]] [TRACK_ACCOUNTS='[LIST]']"
 task :track do
   Rake::Task["db:migrate:db_connect"].invoke
   require File.join(File.dirname(__FILE__), '..', 'cloud_cost_tracker')
